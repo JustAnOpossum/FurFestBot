@@ -1,0 +1,29 @@
+{
+  "name": "mffcountdownbot",
+  "version": "1.0.0",
+  "description": "Telegram bot that counts down the days until MFF",
+  "main": "main.js",
+  "dependencies": {
+    "gm": "^1.22.0",
+    "nanotimer": "^0.3.14",
+    "nedb": "^1.8.0",
+    "node-emoji": "^1.3.1",
+    "node-telegram-bot-api": "^0.23.3",
+    "random-org": "^0.1.5",
+    "request": "^2.74.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ConnorTheFox/MFFCountdownBot.git"
+  },
+  "author": "ConnorTheFox",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ConnorTheFox/MFFCountdownBot/issues"
+  },
+  "homepage": "https://github.com/ConnorTheFox/MFFCountdownBot#readme"
+}
