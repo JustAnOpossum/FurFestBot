@@ -7,7 +7,7 @@ The bot was coded in Node.js
 # Where to find my bot?
 You can find my bot at
 
-https://telegram.me/MFFCountdownBot
+https://telegram.me/FurFestBot
 
 # How to run?
 
