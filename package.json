@@ -1,6 +1,6 @@
 {
   "name": "mffcountdownbot",
-  "version": "1.0.0",
+  "version": "1.1",
   "description": "Telegram bot that counts down the days until MFF",
   "main": "main.js",
   "dependencies": {
@@ -18,12 +18,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ConnorTheFox/MFFCountdownBot.git"
+    "url": "git+https://github.com/ConnorTheFox/FurFestBot.git"
   },
   "author": "ConnorTheFox",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ConnorTheFox/MFFCountdownBot/issues"
+    "url": "https://github.com/ConnorTheFox/FurFestBot/issues"
   },
-  "homepage": "https://github.com/ConnorTheFox/MFFCountdownBot#readme"
+  "homepage": "https://github.com/ConnorTheFox/FurFestBot#readme"
 }
