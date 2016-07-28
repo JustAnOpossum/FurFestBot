@@ -102,7 +102,7 @@ exports.error = function(removed) {
     })
 }
 
-exports.map = function (query, type, source) {
+exports.map = function(query, type, source) {
     return new Promise(function(res, rej) {
         if (type === 'check') {
             remember.find(query, function(err, data) {
