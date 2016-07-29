@@ -18,7 +18,7 @@ const request = require('request')
 
 bot.on('message', function(msg) {
     try {
-        if (msg.new_chat_participant.id === 201654972) {
+        if (msg.new_chat_participant.id === 185002901) {
             bot.sendMessage(msg.chat.id, 'Hello! I am a bot that will tell you how many days until MFF :D. Use /countdown to get a picture daily with how many days until MFF. I was made by @ConnorTheFox. Type /info if you want to know more about me. All the photos that are shown were taken by AoLun. Use /help to get a overview of the commands and things this got can do')
         }
     } catch (err) {}
@@ -126,73 +126,68 @@ bot.onText(/\/daysleft/, function(msg, match) {
 
 })
 
-bot.onText(/\/howfar/, function(msg, match) {
-    if (msg.chat.title != undefined) {
-        console.log('Group ' + msg.chat.title + ' Used command /howfar')
-    } else {
-        console.log(msg.chat.first_name + ' Used command /howfar')
+bot.onText(/\/howfar/, function (msg, match) {
+  if (msg.chat.title != undefined) {
+      console.log('Group ' + msg.chat.title + ' Used command /howfar')
+  } else {
+      console.log(msg.chat.first_name + ' Used command /howfar')
+  }
+  let info = {
+    user:msg.chat.id,
+    looking:'location'
+  }
+  db.map(info, 'check').then(function(data) {
+    if (data === 'added user') {
+      bot.sendMessage(msg.chat.id, 'Please send location using Telegrams mobile app. Type /cancel to cancel command')
     }
-    let info = {
-        user: msg.chat.id,
-        looking: 'location'
-    }
-    db.map(info, 'check').then(function(data) {
-        if (data === 'added user') {
-            bot.sendMessage(msg.chat.id, 'Please send location using Telegrams mobile app. Type /cancel to cancel command')
-        }
-    })
+  })
 })
 
-bot.onText(/\/cancel/, function(msg, match) {
-    let info = {
-        user: msg.chat.id,
-        looking: 'location'
+bot.onText(/\/cancel/, function (msg, match) {
+  let info = {
+    user:msg.chat.id,
+    looking:'location'
+  }
+  db.map(info, 'delete').then(function (data){
+    if (data === 'removed') {
+      bot.sendMessage(msg.chat.id, 'Canceled Command')
     }
-    db.map(info, 'delete').then(function(data) {
-        if (data === 'removed') {
-            bot.sendMessage(msg.chat.id, 'Canceled Command')
-        }
-        if (data === 'not there') {
-            bot.sendMessage(msg.chat.id, 'No Command')
-        }
-    })
+    if (data === 'not there') {
+      bot.sendMessage(msg.chat.id, 'No Command')
+    }
+  })
 })
 
-bot.on('location', function(loc) {
-    let info = {
-        user: loc.chat.id,
-        looking: 'location'
+bot.on('location', function(loc){
+  let info = {
+    user:loc.chat.id,
+    looking:'location'
+  }
+  db.map(info, 'check', 'location').then(function (fromdb){
+    if (fromdb != 'ready for loc') {
+      bot.sendMessage(loc.chat.id, 'Use /howfar')
     }
-    db.map(info, 'check', 'location').then(function(fromdb) {
-        if (fromdb != 'ready for loc') {
-            bot.sendMessage(loc.chat.id, 'Use /howfar')
+    if (fromdb === 'ready for loc') {
+      let mapGen = {
+        lat:loc.location.latitude,
+        lon:loc.location.longitude
+      }
+      let random = Math.floor(Math.random()*10)
+      let colors = ['black', 'brown', 'green', 'purple', 'yellow', 'blue', 'gray', 'orange', 'red']
+      let url = 'https://maps.googleapis.com/maps/api/staticmap?center='+mapGen.lat+','+mapGen.lon+'&size=600x300&scale=2&markers=color:'+colors[random]+'|size:small|'+mapGen.lat+','+mapGen.lon+'|rosemont&key='+fs.readFileSync('./private/google.txt')
+      let directions = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins='+mapGen.lat+','+mapGen.lon+'&destinations=rosemont&units=imperial&key='+fs.readFileSync('./private/google.txt')
+      request(url, {encoding:null}, function(err, res, map){
+        request(directions, function(error, response, final){
+          let time = JSON.parse(final)
+          if (time.rows[0].elements[0].status === 'OK') {
+          bot.sendPhoto(loc.chat.id, map, {caption:'Distance: '+time.rows[0].elements[0].distance.text+'\nTravel Time: '+time.rows[0].elements[0].duration.text})
+          db.map(info, 'delete')
         }
-        if (fromdb === 'ready for loc') {
-            let mapGen = {
-                lat: loc.location.latitude,
-                lon: loc.location.longitude
-            }
-            let random = Math.floor(Math.random() * 10)
-            let colors = ['black', 'brown', 'green', 'purple', 'yellow', 'blue', 'gray', 'orange', 'red']
-            let url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + mapGen.lat + ',' + mapGen.lon + '&size=600x300&scale=2&markers=color:' + colors[random] + '|size:small|' + mapGen.lat + ',' + mapGen.lon + '|rosemont&key=' + fs.readFileSync('./private/google.txt')
-            let directions = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=' + mapGen.lat + ',' + mapGen.lon + '&destinations=rosemont&units=imperial&key=' + fs.readFileSync('./private/google.txt')
-            request(url, {
-                encoding: null
-            }, function(err, res, map) {
-                request(directions, function(error, response, final) {
-                    let time = JSON.parse(final)
-                    if (time.rows[0].elements[0].status === 'OK') {
-                        bot.sendPhoto(loc.chat.id, map, {
-                            caption: 'Distance: ' + time.rows[0].elements[0].distance.text + '\nTravel Time: ' + time.rows[0].elements[0].duration.text
-                        })
-                        db.map(info, 'delete')
-                    } else {
-                        bot.sendMessage(loc.chat.id, 'Error: No route to Rosemont IL')
-                    }
-                })
-            })
-        }
-    })
+        else {bot.sendMessage(loc.chat.id, 'Error: No route to Rosemont IL')}
+        })
+      })
+    }
+  })
 })
 
 bot.onText(/\/help/, function(msg, match) {
@@ -220,12 +215,12 @@ let hotel = function(id, title, thumbnail, price, text, distance) {
 bot.on('inline_query', function(msg) {
     let testex = /hotels\s[0-9][0-9]-[0-9][0-9]\s[0-9][0-9]-[0-9][0-9]/
     if (testex.test(msg.query) === true) {
-        let input = msg.query.split('hotels')
-        let split = input[1].split(' ')
+            let input = msg.query.split('hotels')
+            let split = input[1].split(' ')
         let hotelarr = []
-        request('http://terminal2.expedia.com:80/x/mhotels/search?city=Rosemont%20Il&latitude=41.981539&longitude=-87.859411&filterUnavailable=true&resultsPerPage=40&checkInDate=2016-' + split[1] + '&checkOutDate=2016-' + split[2] + '&room1=1', {
+        request('http://terminal2.expedia.com:80/x/mhotels/search?city=Rosemont%20Il&latitude=41.981539&longitude=-87.859411&filterUnavailable=true&resultsPerPage=40&checkInDate=2016-'+split[1]+'&checkOutDate=2016-'+split[2]+'&room1=1', {
             headers: {
-                'Authorization': 'expedia-apikey key=' + fs.readFileSync('./private/expedia.txt', 'utf8')
+                'Authorization': 'expedia-apikey key='+fs.readFileSync('./private/expedia.txt', 'utf8')
             }
         }, function(err, res, body) {
             let hotels = JSON.parse(body)
@@ -356,3 +351,4 @@ function emojiParser(days) {
         return emoji.emojify(':' + emojiArr[0] + '::' + emojiArr[1] + '::' + emojiArr[2] + ':')
     }
 }
+

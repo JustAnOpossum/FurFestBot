@@ -24,7 +24,7 @@ exports.add = function(uid, name, group) {
                 if (docs[0] === undefined) {
                     db.insert(doc, function(err, newDoc) {
                         if (!err) {
-                            console.log('User: ' + doc.name.toString() + ' Added')
+                            console.log(doc.name.toString() + ' Added')
                             res('Added')
                         } else {
                             rej(err)
@@ -102,7 +102,7 @@ exports.error = function(removed) {
     })
 }
 
-exports.map = function(query, type, source) {
+exports.map = function (query, type, source) {
     return new Promise(function(res, rej) {
         if (type === 'check') {
             remember.find(query, function(err, data) {
