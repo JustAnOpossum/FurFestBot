@@ -8,7 +8,8 @@ const RandomOrg = require('random-org')
 const days = require('./days.js')
 const random = new RandomOrg({
     apiKey: fs.readFileSync(path.join(__dirname, "../private/randomkey.txt"), 'utf8').toString()
-});
+})
+const log = require('./logController.js')
 
 exports.pickImage = function() {
     return new Promise(function(res, rej) {
@@ -35,20 +36,26 @@ exports.pickImage = function() {
 
         function writeImage(width, height) {
             days.untilMff().then(function(day) {
+              let dayStr
+              if (day === 1) {
+                dayStr = 'Tomorrow Is\nMFF!'
+              }
+              else {
+                dayStr = day + ' days\nuntil MFF!'
+              }
                 let random1 = Math.floor(Math.random() * 255)
                 let random2 = Math.floor(Math.random() * 255)
                 let random3 = Math.floor(Math.random() * 255)
                 gm(num.pics[randNum])
                     .fill('rgb(' + random1.toString() + ', ' + random2.toString() + ', ' + random3.toString() + ')')
-                    .drawText(width / 6, height / 3, day + ' days\nuntil MFF!')
+                    .drawText(width / 6, height / 3, dayStr)
                     .font(path.join(__dirname, "../fonts/swag.ttf"))
                     .fontSize(width / 5)
                     .write(path.join(__dirname, "../Countdown/" + day.toString() + '.jpg'), function(err) {
                         if (!err) {
-                            console.log('Done')
+                            log.picture('Day ' + day + ' Generated')
                             let file = fs.readFile(path.join(__dirname, "../Countdown/" + day + '.jpg'), function(err, data) {
                                 if (!err) {
-                                    console.log('File read!')
                                     res(data)
                                 } else {
                                     rej(err)
@@ -58,14 +65,5 @@ exports.pickImage = function() {
                     })
             })
         }
-    })
-}
-
-exports.findImage = function() {
-    let rand = Math.floor(Math.random() * 1181)
-    return new Promise(function(res, rej) {
-        fs.readFile(path.join(__dirname, '../mff/pic' + rand + '.jpg'), function(err, data) {
-            res(data)
-        })
     })
 }

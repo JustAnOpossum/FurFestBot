@@ -1,12 +1,20 @@
 const path = require('path')
 const Datastore = require('nedb')
 const db = new Datastore({
-    filename: path.join(__dirname, "../countdown.db"),
+    filename: path.join(__dirname, "../databases/countdown.db"),
     autoload: true
 })
 const Nano = require('nanotimer')
 const timer = new Nano()
 const remember = new Datastore()
+const airportUser = new Datastore({
+    filename: path.join(__dirname, "../databases/airports.db"),
+    autoload: true
+})
+const shouldSend = new Datastore({
+    filename: path.join(__dirname, "../databases/shouldSend.db"),
+    autoload: true
+})
 
 
 exports.add = function(uid, name, group) {
@@ -21,7 +29,7 @@ exports.add = function(uid, name, group) {
             chatId: uid
         }, function(err, docs) {
             if (!err) {
-                if (docs[0] === undefined) {
+                if (!docs[0]) {
                     db.insert(doc, function(err, newDoc) {
                         if (!err) {
                             console.log(doc.name.toString() + ' Added')
@@ -112,7 +120,6 @@ exports.map = function (query, type, source) {
                     }
                     if (source != 'location') {
                         remember.insert(query, function(err, added) {
-                            remember.persistence.compactDatafile()
                             res('added user')
                         })
                     }
@@ -126,7 +133,6 @@ exports.map = function (query, type, source) {
             remember.remove(query, function(err, rem) {
                 if (rem === 0) {
                     res('not there')
-                    remember.persistence.compactDatafile()
                 }
                 if (rem === 1) {
                     res('removed')
@@ -134,4 +140,77 @@ exports.map = function (query, type, source) {
             })
         }
     })
+}
+
+exports.newMonitor = function (uid, airport) {
+    return new Promise(function(res, rej) {
+        let doc = {
+            'id': uid,
+            'airport': airport,
+        }
+        airportUser.find({
+            id: uid,
+            airport: airport
+        }, function(err, docs) {
+            if (!err) {
+                if (!docs[0]) {
+                    airportUser.insert(doc, function(err, newDoc) {
+                        if (!err) {
+                            res('Added')
+                        } else {
+                            rej(err)
+                        }
+                    });
+                } else {
+                    res('In')
+                }
+            } else {
+                rej(err)
+            }
+        });
+    })
+}
+
+exports.removeMonitor = function(user, airport){
+  return new Promise(function(res, rej) {
+      airportUser.remove({
+          id: user,
+          airport: airport
+      }, function(err, num) {
+          if (!err) {
+              if (num != 1) {
+                  res('not')
+              } else {
+                  res('removed')
+                  db.persistence.compactDatafile()
+              }
+          } else {
+              rej(err)
+          }
+      })
+  })
+}
+
+exports.shouldSend = function(toAdd, toUpdate, type){
+  return new Promise(function(res, rej){
+    if (type === 'insert'){
+      shouldSend.insert(toAdd)
+      shouldSend.persistence.compactDatafile()
+      res('1')
+    }
+    if (type === 'update'){
+      shouldSend.update(toAdd, toUpdate)
+      shouldSend.persistence.compactDatafile()
+      res('1')
+    }
+    if (type === 'find'){
+      shouldSend.find(toAdd, function(err, data){
+        res(data)
+      })
+    }
+    if (type === 'remove') {
+      shouldSend.remove(toAdd)
+      res('done')
+    }
+  })
 }

@@ -91,3 +91,7 @@ jspm_packages
 
 private
 keys
+testbot
+mff
+Countdown
+test.js
