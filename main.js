@@ -197,6 +197,9 @@ bot.onText(/\/help/, function(msg, match) {
     bot.sendMessage(msg.chat.id, help)
 })
 
+//bot.on('inline_query', function(msg) {
+//})
+
 bot.onText(/\/airport (.+)/, function(msg, match) {
   if (msg.chat.title) {
       log.command('Group ' + msg.chat.title + ' Used command /airport')
@@ -260,14 +263,6 @@ bot.onText(/\/stopairport (.+)/, function(msg, match) {
  })
 
 
-function checkDelays() {
-  db.shouldSend({}, null, 'find').then(function(data){
-    for (let i in data) {
-        airports.checkDelays(data[i].airport, data[i].id).then(string => {if(string != 'no update'){bot.sendMessage(data[i].id, string, {parse_mode:'markdown'})}})
-    }
-  })
-}
-
 timer.setInterval(checkTime, '', '60s')
 
 function checkTime() {
@@ -278,6 +273,9 @@ function checkTime() {
         sendDaily()
         timeDrift = false
         delayForTime.setTimeout(function(){timeDrift = true}, '', '240s')
+    }
+if (date.getTime() >= 1480464000000 && date.getTime() <= 1480982400000) {
+       checkDelays()
     }
 }
 
@@ -308,3 +306,12 @@ function sendDaily() {
       }
     })
 }
+
+function checkDelays() {
+  db.shouldSend({}, null, 'find').then(function(data){
+    for (let i in data) {
+        airports.checkDelays(data[i].airport, data[i].id).then(string => {if(string != 'no update'){bot.sendMessage(data[i].id, string, {parse_mode:'markdown'})}})
+    }
+  })
+}
+
