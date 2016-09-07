@@ -16,6 +16,7 @@ const days = require('./src/days.js')
 const db = require('./src/dbcontroller.js')
 const Nano = require('nanotimer')
 const timer = new Nano()
+const delayForTime = new Nano()
 const request = require('request')
 const airports = require('./src/airport.js')
 const returns = require('./src/returns.js')
@@ -24,6 +25,7 @@ const log = require('./src/logController.js')
 const start = 'Use /countdown to start the MFF countdown!\nBot made by @ConnorTheFox.\nAll photos are taken by [AoLun](https://www.flickr.com/photos/aolun/)\nUse /help for command info.'
 const help = 'Normal Commands:\n/countdown: Subscribes you do a daily reminder of how many days until MFF.\n/stopcountdown: Unsubscribes you from the daily countdown.\n/airport (code): Put in airport code and a couple days before the bot will monitor it for delays.\n/stopairport (code): Use this command to delete the monitor\n/info: Gives information about the techinial side of the bot.\n/daysleft: Tells you how many days are left.\n/howfar: Send the bot a location and it will map it and tell you how long it will take to get there by driving\n\nInline Queries: COMMING SOON'
 const info = 'Information about this bot:\nIt is coded in node.js\nIf you want to view the code goto https://github.com/ConnorTheFox/FurFestBot\nI made this bot because im hyped about MFF'
+let timeDrift = true
 
 bot.setWebHook('telegram.thetechiefox.com/bot' + token, __dirname + '/keys/crt.pem')
 
@@ -195,9 +197,6 @@ bot.onText(/\/help/, function(msg, match) {
     bot.sendMessage(msg.chat.id, help)
 })
 
-//bot.on('inline_query', function(msg) {
-//})
-
 bot.onText(/\/airport (.+)/, function(msg, match) {
   if (msg.chat.title) {
       log.command('Group ' + msg.chat.title + ' Used command /airport')
@@ -248,6 +247,19 @@ bot.onText(/\/stopairport (.+)/, function(msg, match) {
     })
 })
 
+ bot.onText(/\/sendMessage (.+)/, function(msg, match) {
+   if (msg.chat.id === 119682002){
+     bot.sendMessage(match[1].split("msg:")[0], match[1].split("msg:")[1])
+   }
+ })
+
+ bot.onText(/\/debug/, function(msg, match) {
+   if (msg.chat.id === 119682002){
+     sendDaily()
+   }
+ })
+
+
 function checkDelays() {
   db.shouldSend({}, null, 'find').then(function(data){
     for (let i in data) {
@@ -262,11 +274,10 @@ function checkTime() {
     let date = new Date()
     let hour = date.getHours()
     let minute = date.getMinutes()
-    if (hour === 10 && minute === 0) {
+    if (hour === 10 && minute === 0 || hour === 10 && minute === 1 && timeDrift === true) {
         sendDaily()
-    }
-    if (date.getTime() >= 1480464000000 && date.getTime() <= 1480982400000) {
-      checkDelays()
+        timeDrift = false
+        delayForTime.setTimeout(function(){timeDrift = true}, '', '240s')
     }
 }
 
