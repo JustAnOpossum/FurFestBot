@@ -3,7 +3,6 @@
 const path = require('path')
 const gm = require('gm')
 const fs = require('fs')
-const RandomOrg = require('random-org')
 const days = require('./days.js')
 const log = require('./logController.js')
 const Trianglify = require('trianglify');
