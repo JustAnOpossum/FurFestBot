@@ -3,40 +3,53 @@
 const path = require('path')
 const gm = require('gm')
 const fs = require('fs')
+const RandomOrg = require('random-org')
 const days = require('./days.js')
 const log = require('./logController.js')
-const Trianglify = require('trianglify');
-const random = require('randomcolor')
+const source = require('./picturesLinks.js')
+const returns = require('./returns.js')
+
 
 exports.pickImage = function() {
     return new Promise(function(res, rej) {
-      days.untilMff().then(day => {
-        var types = ['bright', 'dark']
-        var pattern = Trianglify({width: 1024, height: 1024, variance: "1", cell_size: 150, x_colors: random({count: 5, luminosity: Math.floor(Math.random()*3), hue: 'random'})}).png()
-                let dayStr
-                if (day === 1) {
-                  dayStr = '(Tomorrow Is\nMFF!)'
+        let randNum = Math.floor(Math.random() * source.pics.length)
+        findSize()
+
+        function findSize() {
+            gm(path.join(__dirname, '../' + source.pics[randNum])).size(function(err, num) {
+                if (!err) {
+                    writeImage(num.width, num.height)
+                } else {
+                    console.log(err)
                 }
-                else {
-                  dayStr = '{}' + day + ' days{}\n^until MFF!^'
+            })
+        }
+
+        function writeImage(width, height) {
+            days.untilMff().then(function(day) {
+                let emojiDay = day.toString().split('')
+                let emojiDiff
+                if (height > width) {
+                    emojiDiff = [4, 3, 2, 3]
+                } else {
+                    emojiDiff = [3, 2.9, 2, 2.9]
                 }
-                  gm(new Buffer(pattern.replace(/^data:image\/png;base64,/, ''), 'base64'))
-                      .fill('rgb('+Math.floor(Math.random()*255)+','+Math.floor(Math.random()*255)+','+Math.floor(Math.random()*255)+')')
-                      .drawText('50', '412', dayStr)
-                      .font(path.join(__dirname, "../fonts/font.ttf"))
-                      .fontSize('150')
-                      .write(path.join(__dirname, "../Countdown/" + day.toString() + '.png'), function(err) {
-                          if (!err) {
-                              log.picture('Day ' + day + ' Generated')
-                              let file = fs.readFile(path.join(__dirname, "../Countdown/" + day + '.png'), function(err, data) {
-                                  if (!err) {
-                                      res(data)
-                                  } else {
-                                      rej(err)
-                                  }
-                              })
-                          }
-                      })
-      })
+                gm(path.join(__dirname, '../' + source.pics[randNum]))
+                    .draw(['image Over ' + width / emojiDiff[0] + ',' + height / emojiDiff[1] + ' 0,0 ' + path.join(__dirname, '../emoji/num/') + emojiDay[0] + '.png'])
+                    .draw(['image Over  ' + width / emojiDiff[2] + ',' + height / emojiDiff[3] + ',0,0 ' + path.join(__dirname, '../emoji/num/') + emojiDay[1] + '.png'])
+                    .write(path.join(__dirname, "../Countdown/" + day.toString() + '.jpg'), function(err) {
+                        if (!err) {
+                            log.picture('Day ' + day + ' Generated')
+                            let file = fs.readFile(path.join(__dirname, "../Countdown/" + day + '.jpg'), function(err, data) {
+                                if (!err) {
+                                    res(data)
+                                } else {
+                                    rej(err)
+                                }
+                            })
+                        }
+                    })
+            })
+        }
     })
 }

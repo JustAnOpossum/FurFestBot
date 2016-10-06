@@ -32,7 +32,6 @@ exports.add = function(uid, name, group) {
                 if (!docs[0]) {
                     db.insert(doc, function(err, newDoc) {
                         if (!err) {
-                            console.log(doc.name.toString() + ' Added')
                             res('Added')
                         } else {
                             rej(err)
@@ -71,8 +70,8 @@ exports.remove = function(id) {
                 if (num != 1) {
                     res('Not Here')
                 } else {
+		    db.persistence.compactDatafile()
                     res('Removed')
-                    db.persistence.compactDatafile()
                 }
             } else {
                 rej(err)
@@ -90,8 +89,8 @@ exports.update = function(old, q1, q2, q3, q4, q5, q6, q7, q8) {
         obj[q7] = q8
         db.update(old, obj, function(err, items) {
             if (!err) {
+		db.persistence.compactDatafile()
                 res('Updated')
-                db.persistence.compactDatafile()
             }
         })
     })
@@ -101,8 +100,8 @@ exports.error = function(removed) {
     return new Promise(function(res, rej) {
         db.remove(removed, function(err, data) {
             if (data != 1) {
-                res('Removed')
                 db.persistence.compactDatafile()
+                res('Removed')
             } else {
                 rej('err')
             }
@@ -181,8 +180,8 @@ exports.removeMonitor = function(user, airport){
               if (num != 1) {
                   res('not')
               } else {
+		  db.persistence.compactDatafile()
                   res('removed')
-                  db.persistence.compactDatafile()
               }
           } else {
               rej(err)
