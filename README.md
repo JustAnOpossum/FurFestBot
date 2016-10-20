@@ -20,4 +20,4 @@ Edit the private folder and put your own keys in. Then go into **pic.js** and ch
 
 # Example Picture
 
-![Imgur](https://i.imgur.com/udiLn8Z.png)
+[![42.jpg](https://s21.postimg.org/3ndjggz5z/image.jpg)](https://postimg.org/image/adu0pwmbn/)
