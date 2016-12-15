@@ -10,7 +10,7 @@ let returns = require('./returns.js')
 
 
 exports.getInitialUpdate = function (user, airport) {
-    request('https://services.faa.gov/airport/status/' + airport + '?format=json', function(err, res, body) {
+    request('https://services.faa.gov/airport/status/' + airport + '?format=json', {rejectUnauthorized: false}, function(err, res, body) {
         let toAdd = {
             id: user,
             airport: airport,
@@ -22,7 +22,7 @@ exports.getInitialUpdate = function (user, airport) {
 
 exports.checkDelays = function (airport, user) {
   return new Promise(function(res, rej){
-    request('https://services.faa.gov/airport/status/' + airport + '?format=json', function(err, resp, body) {
+    request('https://services.faa.gov/airport/status/' + airport + '?format=json', {rejectUnauthorized: false},  function(err, resp, body) {
         let delayRes = JSON.parse(body)
         let finder = {
           id: user,

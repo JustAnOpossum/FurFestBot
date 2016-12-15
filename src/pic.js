@@ -29,6 +29,9 @@ exports.pickImage = function() {
             days.untilMff().then(function(day) {
                 let emojiDay = day.toString().split('')
                 let emojiDiff
+                if (emojiDay.length === 1) {
+                  emojiDay.unshift('0')
+                }
                 if (height > width) {
                     emojiDiff = [4, 3, 2, 3]
                 } else {
