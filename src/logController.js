@@ -31,18 +31,24 @@ let logger = new(winston.Logger)({
     ]
 })
 
-exports.daily = function(string){
-  logger.daily(string)
+const daily = function(string) {
+    logger.daily(string)
 }
-exports.command = function(string){
-  logger.command(string)
+const command = function(string) {
+    logger.command(string)
 }
-exports.query = function(string){
-  logger.query(string)
+const query = function(string) {
+    logger.query(string)
 }
-exports.picture = function(string){
-  logger.picture(string)
+const picture = function(string) {
+    logger.picture(string)
 }
-exports.info = function(string){
-  logger.info(string)
+const info = function(string) {
+    logger.info(string)
 }
+
+exports.daily = daily
+exports.command = command
+exports.query = query
+exports.picture = picture
+exports.info = info

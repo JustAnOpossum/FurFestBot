@@ -3,50 +3,86 @@
 const path = require('path')
 const gm = require('gm')
 const fs = require('fs')
-const RandomOrg = require('random-org')
 const days = require('./days.js')
 const log = require('./logController.js')
-const source = require('./picturesLinks.js')
 const returns = require('./returns.js')
+const db = require('./dbcontroller.js')
 
 
-exports.pickImage = function() {
+const pickImage = function() {
     return new Promise(function(res, rej) {
-        let randNum = Math.floor(Math.random() * source.pics.length)
-        findSize()
+        let randNum
+        let mffArr
+        fs.readdir(path.join(__dirname, '../mff'), function(err, mffpics) {
+            mffArr = mffpics
+            if (!err) {
+                function checkData() {
+                    randNum = Math.floor(Math.random() * mffpics.length)
+                    db.searchPic(mffpics[randNum]).then(data => {
+                        if (data[0]) {
+                            checkData()
+                        } else {
+                            db.addPic(mffpics[randNum])
+                            findSize()
+                        }
+                    })
+                }
+                checkData()
+            }
+        })
 
         function findSize() {
-            gm(path.join(__dirname, '../' + source.pics[randNum])).size(function(err, num) {
+            gm(path.join(__dirname, '../mff/' + mffArr[randNum])).size(function(err, num) {
                 if (!err) {
                     writeImage(num.width, num.height)
                 } else {
-                    console.log(err)
+                    rej(err)
                 }
             })
         }
 
         function writeImage(width, height) {
             days.untilMff().then(function(day) {
-                let emojiDay = day.toString().split('')
-                let emojiDiff
-                if (emojiDay.length === 1) {
-                  emojiDay.unshift('0')
+                let textW
+                let textH
+                //Larger Number moves it to the left
+                let daypos = {
+                  3: {
+                    landscape: [4.5, 1.8],
+                    portrait: [4.4, 2]
+                  },
+                  2: {
+                    landscape: [3.2, 1.8],
+                    portrait: [3.1, 2]
+                  },
+                  1: {
+                    landscape: [2.4, 1.8],
+                    portrait: [2.4, 2]
+                  }
                 }
-                if (height > width) {
-                    emojiDiff = [4, 3, 2, 3]
+                let determinePosition = day.toString().length
+                if (width > height) {
+                    textW = width / daypos[determinePosition].landscape[0]
+                    textH = height / daypos[determinePosition].landscape[1]
                 } else {
-                    emojiDiff = [3, 2.9, 2, 2.9]
+                    textW = width / daypos[determinePosition].portrait[0]
+                    textH = height / daypos[determinePosition].portrait[1]
                 }
-                gm(path.join(__dirname, '../' + source.pics[randNum]))
-                    .draw(['image Over ' + width / emojiDiff[0] + ',' + height / emojiDiff[1] + ' 0,0 ' + path.join(__dirname, '../emoji/num/') + emojiDay[0] + '.png'])
-                    .draw(['image Over  ' + width / emojiDiff[2] + ',' + height / emojiDiff[3] + ',0,0 ' + path.join(__dirname, '../emoji/num/') + emojiDay[1] + '.png'])
+                gm(path.join(__dirname, '../mff/' + mffArr[randNum]))
+                    .fill('rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')')
+                    .drawText(textW, textH, day)
+                    .font(path.join(__dirname, "../fonts/font.ttf"))
+                    .fontSize(width / 7)
                     .write(path.join(__dirname, "../Countdown/" + day.toString() + '.jpg'), function(err) {
                         if (!err) {
                             log.picture('Day ' + day + ' Generated')
                             let file = fs.readFile(path.join(__dirname, "../Countdown/" + day + '.jpg'), function(err, data) {
                                 if (!err) {
-                                    res(data)
+                                  db.findCredit(mffArr[randNum]).then(credit => {
+                                    res({buffer:data, credit:credit[0].credit})
+                                  })
                                 } else {
+                                    console.log(err)
                                     rej(err)
                                 }
                             })
@@ -56,3 +92,5 @@ exports.pickImage = function() {
         }
     })
 }
+
+exports.pickImage = pickImage

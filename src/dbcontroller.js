@@ -6,22 +6,20 @@ const db = new Datastore({
 })
 const Nano = require('nanotimer')
 const timer = new Nano()
-const remember = new Datastore()
-const airportUser = new Datastore({
-    filename: path.join(__dirname, "../databases/airports.db"),
+const picDb = new Datastore({
+    filename: path.join(__dirname, "../databases/pictures.db"),
     autoload: true
 })
-const shouldSend = new Datastore({
-    filename: path.join(__dirname, "../databases/shouldSend.db"),
+const creditDb = new Datastore({
+    filename: path.join(__dirname, "../databases/credit.db"),
     autoload: true
 })
 
 
-exports.add = function(uid, name, group) {
+const add = function(uid, name, group) {
     return new Promise(function(res, rej) {
         var doc = {
             'chatId': uid,
-            'finding': 'tag',
             'name': name,
             'group': group,
         }
@@ -47,11 +45,9 @@ exports.add = function(uid, name, group) {
     })
 }
 
-exports.lookup = function(finding, data) {
+const lookup = function(query) {
     return new Promise(function(res, rej) {
-        var obj = {}
-        obj[finding] = data
-        db.find(obj, function(err, docs) {
+        db.find(query, function(err, docs) {
             if (!err) {
                 res(docs)
             } else {
@@ -61,7 +57,7 @@ exports.lookup = function(finding, data) {
     })
 }
 
-exports.remove = function(id) {
+const remove = function(id) {
     return new Promise(function(res, rej) {
         db.remove({
             chatId: id
@@ -70,7 +66,7 @@ exports.remove = function(id) {
                 if (num != 1) {
                     res('Not Here')
                 } else {
-		    db.persistence.compactDatafile()
+                    db.persistence.compactDatafile()
                     res('Removed')
                 }
             } else {
@@ -80,136 +76,92 @@ exports.remove = function(id) {
     })
 }
 
-exports.update = function(old, q1, q2, q3, q4, q5, q6, q7, q8) {
+const update = function(query, update) {
     return new Promise(function(res, rej) {
-        var obj = {}
-        obj[q1] = q2
-        obj[q3] = q4
-        obj[q5] = q6
-        obj[q7] = q8
-        db.update(old, obj, function(err, items) {
+        db.update(query, {
+            $set: {
+                chatId: update
+            }
+        }, function(err, items) {
             if (!err) {
-		db.persistence.compactDatafile()
+                db.persistence.compactDatafile()
                 res('Updated')
             }
         })
     })
 }
 
-exports.error = function(removed) {
+const error = function(removed) {
     return new Promise(function(res, rej) {
         db.remove(removed, function(err, data) {
             if (data != 1) {
                 db.persistence.compactDatafile()
                 res('Removed')
             } else {
-                rej('err')
+                rej(err)
             }
         })
     })
 }
 
-exports.map = function (query, type, source) {
+const searchPic = function(name) {
     return new Promise(function(res, rej) {
-        if (type === 'check') {
-            remember.find(query, function(err, data) {
-                if (data[0] === undefined) {
-                    if (source === 'location') {
-                        res('not here')
-                    }
-                    if (source != 'location') {
-                        remember.insert(query, function(err, added) {
-                            res('added user')
-                        })
-                    }
-                }
-                if (data[0] != undefined) {
-                    res('ready for loc')
-                }
-            })
-        }
-        if (type === 'delete') {
-            remember.remove(query, function(err, rem) {
-                if (rem === 0) {
-                    res('not there')
-                }
-                if (rem === 1) {
-                    res('removed')
-                }
-            })
-        }
-    })
-}
-
-exports.newMonitor = function (uid, airport) {
-    return new Promise(function(res, rej) {
-        let doc = {
-            'id': uid,
-            'airport': airport,
-        }
-        airportUser.find({
-            id: uid,
-            airport: airport
-        }, function(err, docs) {
+        picDb.find({
+            name: name
+        }, function(err, pic) {
             if (!err) {
-                if (!docs[0]) {
-                    airportUser.insert(doc, function(err, newDoc) {
-                        if (!err) {
-                            res('Added')
-                        } else {
-                            rej(err)
-                        }
-                    });
-                } else {
-                    res('In')
-                }
-            } else {
-                rej(err)
+                res(pic)
             }
-        });
+        })
     })
 }
 
-exports.removeMonitor = function(user, airport){
-  return new Promise(function(res, rej) {
-      airportUser.remove({
-          id: user,
-          airport: airport
-      }, function(err, num) {
-          if (!err) {
-              if (num != 1) {
-                  res('not')
-              } else {
-		  db.persistence.compactDatafile()
-                  res('removed')
-              }
-          } else {
-              rej(err)
-          }
-      })
+const addPic = function(name) {
+    return new Promise(function(res, rej) {
+        picDb.insert({
+            name: name
+        }, function(err, num) {
+            res(num)
+        })
+    })
+}
+
+const addCredit = function(person, photo) {
+  console.log(person, photo)
+  return new Promise(function(res, rej){
+    creditDb.insert({
+      photo:photo,
+      credit:person
+    }, function(err, done){
+      if (!err) {
+        res(done)
+      }
+      else {
+        rej(err)
+      }
+    })
   })
 }
 
-exports.shouldSend = function(toAdd, toUpdate, type){
+const findCredit = function(photo) {
   return new Promise(function(res, rej){
-    if (type === 'insert'){
-      shouldSend.insert(toAdd)
-      shouldSend.persistence.compactDatafile()
-      res('1')
-    }
-    if (type === 'update'){
-      shouldSend.update(toAdd, toUpdate)
-      shouldSend.persistence.compactDatafile()
-      res('1')
-    }
-    if (type === 'find'){
-      shouldSend.find(toAdd, function(err, data){
-        res(data)
-      })
-    }
-    if (type === 'remove') {
-      shouldSend.remove(toAdd)
-      res('done')
-    }
+    creditDb.find({photo:photo}, function(err, credit){
+      if (!err) {
+        res(credit)
+      }
+      else {
+        rej(err)
+      }
+    })
   })
 }
+
+exports.add = add
+exports.lookup = lookup
+exports.remove = remove
+exports.update = update
+exports.error = error
+exports.searchPic = searchPic
+exports.addPic = addPic
+exports.addCredit = addCredit
+exports.findCredit = findCredit
