@@ -42,53 +42,55 @@ const pickImage = function() {
         }
 
         function writeImage(width, height) {
-            days.untilMff().then(function(day) {
-                let textW
-                let textH
+            let day = days.untilMff()
+            let textW
+            let textH
                 //Larger Number moves it to the left
-                let daypos = {
-                  3: {
+            let daypos = {
+                3: {
                     landscape: [4.5, 1.8],
                     portrait: [4.4, 2]
-                  },
-                  2: {
+                },
+                2: {
                     landscape: [3.2, 1.8],
                     portrait: [3.1, 2]
-                  },
-                  1: {
+                },
+                1: {
                     landscape: [2.4, 1.8],
                     portrait: [2.4, 2]
-                  }
                 }
-                let determinePosition = day.toString().length
-                if (width > height) {
-                    textW = width / daypos[determinePosition].landscape[0]
-                    textH = height / daypos[determinePosition].landscape[1]
-                } else {
-                    textW = width / daypos[determinePosition].portrait[0]
-                    textH = height / daypos[determinePosition].portrait[1]
-                }
-                gm(path.join(__dirname, '../mff/' + mffArr[randNum]))
-                    .fill('rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')')
-                    .drawText(textW, textH, day)
-                    .font(path.join(__dirname, "../fonts/font.ttf"))
-                    .fontSize(width / 7)
-                    .write(path.join(__dirname, "../Countdown/" + day.toString() + '.jpg'), function(err) {
-                        if (!err) {
-                            log.picture('Day ' + day + ' Generated')
-                            let file = fs.readFile(path.join(__dirname, "../Countdown/" + day + '.jpg'), function(err, data) {
-                                if (!err) {
-                                  db.findCredit(mffArr[randNum]).then(credit => {
-                                    res({buffer:data, credit:credit[0].credit})
-                                  })
-                                } else {
-                                    console.log(err)
-                                    rej(err)
-                                }
-                            })
-                        }
-                    })
-            })
+            }
+            let determinePosition = day.toString().length
+            if (width > height) {
+                textW = width / daypos[determinePosition].landscape[0]
+                textH = height / daypos[determinePosition].landscape[1]
+            } else {
+                textW = width / daypos[determinePosition].portrait[0]
+                textH = height / daypos[determinePosition].portrait[1]
+            }
+            gm(path.join(__dirname, '../mff/' + mffArr[randNum]))
+                .fill('rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')')
+                .drawText(textW, textH, day)
+                .font(path.join(__dirname, "../fonts/font.ttf"))
+                .fontSize(width / 7)
+                .write(path.join(__dirname, "../Countdown/" + day.toString() + '.jpg'), function(err) {
+                    if (!err) {
+                        log.picture('Day ' + day + ' Generated')
+                        let file = fs.readFile(path.join(__dirname, "../Countdown/" + day + '.jpg'), function(err, data) {
+                            if (!err) {
+                                db.findCredit(mffArr[randNum]).then(credit => {
+                                    res({
+                                        buffer: data,
+                                        credit: credit[0].credit
+                                    })
+                                })
+                            } else {
+                                console.log(err)
+                                rej(err)
+                            }
+                        })
+                    }
+                })
         }
     })
 }

@@ -127,33 +127,39 @@ const addPic = function(name) {
 }
 
 const addCredit = function(person, photo) {
-  console.log(person, photo)
-  return new Promise(function(res, rej){
-    creditDb.insert({
-      photo:photo,
-      credit:person
-    }, function(err, done){
-      if (!err) {
-        res(done)
-      }
-      else {
-        rej(err)
-      }
+    return new Promise(function(res, rej) {
+      creditDb.find({photo:photo}, function(err, dup){
+        if (!err && !dup[0]) {
+          creditDb.insert({
+              photo: photo,
+              credit: person
+          }, function(err, done) {
+              if (!err) {
+                  res(done)
+              } else {
+                  rej(err)
+              }
+          })
+        }
+        else {
+          res('already here')
+        }
+      })
     })
-  })
 }
 
 const findCredit = function(photo) {
-  return new Promise(function(res, rej){
-    creditDb.find({photo:photo}, function(err, credit){
-      if (!err) {
-        res(credit)
-      }
-      else {
-        rej(err)
-      }
+    return new Promise(function(res, rej) {
+        creditDb.find({
+            photo: photo
+        }, function(err, credit) {
+            if (!err) {
+                res(credit)
+            } else {
+                rej(err)
+            }
+        })
     })
-  })
 }
 
 exports.add = add
