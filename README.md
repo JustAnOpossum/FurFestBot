@@ -15,9 +15,11 @@ If you want to run it for a different convention, or whatever else. Download the
 ```
 npm install
 ```
-Edit the private folder and put your own keys in. Then go into **pic.js** and change MFF to whatever con you want. Edit **urls.js** with the images and video URLs you want to use to generate the images. Put images inside the folder labeled **mff**. Finaly edit main.js and replace the names for the bots responses and whatever you see fit to do.
+Go into src/days.js and edit the date, then go into src/returns.js and edit the strings for returning the countdown picture. In main.js edit the string varibales for commands like /start.
+
+Run main.js with enviroment variable TYPE, which is test or production. And TOKEN which is your telegram bot token.
 
 
 # Example Picture
 
-[![42.jpg](https://s21.postimg.org/3ndjggz5z/image.jpg)](https://postimg.org/image/adu0pwmbn/)
+[![42.jpg](https://s24.postimg.org/w7lx3we3p/photo_2017_01_10_18_45_44.jpg)
