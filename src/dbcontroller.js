@@ -17,7 +17,7 @@ const creditDb = new Datastore({
 
 
 const add = function(uid, name, group) {
-    return new Promise(function(res, rej) {
+    return new Promise((res, rej) => {
         var doc = {
             'chatId': uid,
             'name': name,
@@ -25,43 +25,43 @@ const add = function(uid, name, group) {
         }
         db.find({
             chatId: uid
-        }, function(err, docs) {
+        }, (err, docs) => {
             if (!err) {
                 if (!docs[0]) {
-                    db.insert(doc, function(err, newDoc) {
+                    db.insert(doc, (err, newDoc) => {
                         if (!err) {
                             res('Added')
                         } else {
                             rej(err)
                         }
-                    });
+                    })
                 } else {
                     res('In')
                 }
             } else {
                 rej(err)
             }
-        });
+        })
     })
 }
 
 const lookup = function(query) {
-    return new Promise(function(res, rej) {
-        db.find(query, function(err, docs) {
+    return new Promise((res, rej) => {
+        db.find(query, (err, docs) => {
             if (!err) {
                 res(docs)
             } else {
                 rej(err)
             }
-        });
+        })
     })
 }
 
 const remove = function(id) {
-    return new Promise(function(res, rej) {
+    return new Promise((res, rej) => {
         db.remove({
             chatId: id
-        }, function(err, num) {
+        }, (err, num) => {
             if (!err) {
                 if (num != 1) {
                     res('Not Here')
@@ -77,12 +77,12 @@ const remove = function(id) {
 }
 
 const update = function(query, update) {
-    return new Promise(function(res, rej) {
+    return new Promise((res, rej) => {
         db.update(query, {
             $set: {
                 chatId: update
             }
-        }, function(err, items) {
+        }, (err, items) => {
             if (!err) {
                 db.persistence.compactDatafile()
                 res('Updated')
@@ -92,8 +92,8 @@ const update = function(query, update) {
 }
 
 const error = function(removed) {
-    return new Promise(function(res, rej) {
-        db.remove(removed, function(err, data) {
+    return new Promise((res, rej) => {
+        db.remove(removed, (err, data) => {
             if (data != 1) {
                 db.persistence.compactDatafile()
                 res('Removed')
@@ -105,10 +105,10 @@ const error = function(removed) {
 }
 
 const searchPic = function(name) {
-    return new Promise(function(res, rej) {
+    return new Promise((res, rej) => {
         picDb.find({
             name: name
-        }, function(err, pic) {
+        }, (err, pic) => {
             if (!err) {
                 res(pic)
             }
@@ -117,42 +117,43 @@ const searchPic = function(name) {
 }
 
 const addPic = function(name) {
-    return new Promise(function(res, rej) {
+    return new Promise((res, rej) => {
         picDb.insert({
             name: name
-        }, function(err, num) {
+        }, (err, num) => {
             res(num)
         })
     })
 }
 
 const addCredit = function(person, photo) {
-    return new Promise(function(res, rej) {
-      creditDb.find({photo:photo}, function(err, dup){
-        if (!err && !dup[0]) {
-          creditDb.insert({
-              photo: photo,
-              credit: person
-          }, function(err, done) {
-              if (!err) {
-                  res(done)
-              } else {
-                  rej(err)
-              }
-          })
-        }
-        else {
-          res('already here')
-        }
-      })
+    return new Promise((res, rej) => {
+        creditDb.find({
+            photo: photo
+        }, (err, dup) => {
+            if (!err && !dup[0]) {
+                creditDb.insert({
+                    photo: photo,
+                    credit: person
+                }, (err, done) => {
+                    if (!err) {
+                        res(done)
+                    } else {
+                        rej(err)
+                    }
+                })
+            } else {
+                res('already here')
+            }
+        })
     })
 }
 
 const findCredit = function(photo) {
-    return new Promise(function(res, rej) {
+    return new Promise((res, rej) => {
         creditDb.find({
             photo: photo
-        }, function(err, credit) {
+        }, (err, credit) => {
             if (!err) {
                 res(credit)
             } else {

@@ -10,10 +10,10 @@ const db = require('./dbcontroller.js')
 
 
 const pickImage = function() {
-    return new Promise(function(res, rej) {
+    return new Promise((res, rej) => {
         let randNum
         let mffArr
-        fs.readdir(path.join(__dirname, '../mff'), function(err, mffpics) {
+        fs.readdir(path.join(__dirname, '../mff'), (err, mffpics) => {
             mffArr = mffpics
             if (!err) {
                 function checkData() {
@@ -32,7 +32,7 @@ const pickImage = function() {
         })
 
         function findSize() {
-            gm(path.join(__dirname, '../mff/' + mffArr[randNum])).size(function(err, num) {
+            gm(path.join(__dirname, '../mff/' + mffArr[randNum])).size((err, num) => {
                 if (!err) {
                     writeImage(num.width, num.height)
                 } else {
@@ -73,10 +73,10 @@ const pickImage = function() {
                 .drawText(textW, textH, day)
                 .font(path.join(__dirname, "../fonts/font.ttf"))
                 .fontSize(width / 7)
-                .write(path.join(__dirname, "../Countdown/" + day.toString() + '.jpg'), function(err) {
+                .write(path.join(__dirname, "../Countdown/" + day.toString() + '.jpg'), (err) => {
                     if (!err) {
                         log.picture('Day ' + day + ' Generated')
-                        let file = fs.readFile(path.join(__dirname, "../Countdown/" + day + '.jpg'), function(err, data) {
+                        let file = fs.readFile(path.join(__dirname, "../Countdown/" + day + '.jpg'), (err, data) => {
                             if (!err) {
                                 db.findCredit(mffArr[randNum]).then(credit => {
                                     res({
