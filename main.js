@@ -9,6 +9,7 @@ const fs = require('fs')
 const TelegramBot = require('node-telegram-bot-api')
 const unzip = require('unzip')
 const move = require('mv')
+const online = require('is-online')
 const pic = require('./src/pic.js')
 let token = process.env.TOKEN
 
@@ -38,8 +39,10 @@ const request = require('request')
 const returns = require('./src/returns.js')
 const log = require('./src/logController.js')
 
-const start = 'The bot is currently not counting down since MFF 2016 just happened. Going to start it about day 250. If you want to add your name into the countdown use /countdown'
-const help = '/countdown - Adds you to countdown list\n/stopcountdown - Stops countdown \n/credit - Credit for the pictures I use in the countdown'
+function start() {
+      return 'Hello! This bot has a MFF countdown, but will start in ' + (days.untilMff() - fs.readdirSync('mff').length) + ' days.\nThis is because I don\'t have enough pictures until then.\nIf there are any requests for the bot please message me @ConnorTheFox'
+}
+const help = '/countdown - Adds you to countdown list\n/stopcountdown - Stops countdown \n/info - Information about the bot'
 const info = 'Im a fox'
 let timeDrift = true
 
@@ -68,10 +71,9 @@ bot.on('message', msg => {
     }
 })
 
-
 bot.onText(/\/start/, msg => {
     generateLog(msg.chat.title || msg.chat.first_name, 'start', 'command', testForGroup(msg.chat.first_name))
-    bot.sendMessage(msg.chat.id, start, {
+    bot.sendMessage(msg.chat.id, start(), {
         parse_mode: 'markdown'
     })
 })
@@ -94,12 +96,10 @@ bot.onText(/\/countdown/, msg => {
         })
 })
 
-
 bot.onText(/\/info/, msg => {
     generateLog(msg.chat.title || msg.chat.first_name, 'info', 'command', testForGroup(msg.chat.first_name))
     bot.sendMessage(msg.chat.id, info)
 })
-
 
 bot.onText(/\/stopcountdown/, msg => {
     generateLog(msg.chat.title || msg.chat.first_name, 'stopcountdown', 'command', testForGroup(msg.chat.first_name))
@@ -122,18 +122,21 @@ bot.onText(/\/daysleft/, msg => {
     bot.sendMessage(msg.chat.id, day + ' Days until MFF')
 })
 
-
 bot.onText(/\/help/, msg => {
     generateLog(msg.chat.title || msg.chat.first_name, 'help', 'command', testForGroup(msg.chat.first_name))
     bot.sendMessage(msg.chat.id, help)
 })
 
-
-
 bot.onText(/\/debug/, msg => {
     if (msg.chat.id === connor) {
         sendDaily(true)
     }
+})
+
+bot.onText(/\/until/, msg => {
+    fs.readdir('mff', (err, img) => {
+        bot.sendMessage(msg.chat.id, (days.untilMff() - img.length) + ' Days until start')
+    })
 })
 
 timer.setInterval(checkTime, '', '60s')
@@ -143,7 +146,11 @@ function checkTime() {
     let hour = date.getHours()
     let minute = date.getMinutes()
     if (hour === 10 && minute === 0 || hour === 10 && minute === 1 && timeDrift === true) {
-        sendDaily()
+        online().then(isOnline => {
+            if (isOnline === true) {
+                sendDaily()
+            }
+        })
         timeDrift = false
         delayForTime.setTimeout(() => {
             timeDrift = true
@@ -152,16 +159,16 @@ function checkTime() {
 }
 
 function sendDaily(debug) {
-    fs.writeFileSync(__dirname + '/backups/countdown ' + new Date().toDateString() + '.db', fs.readFileSync(__dirname + '/databases/countdown.db'))
     let totalPics = fs.readdirSync('mff').length
     let attempt = 0
     let photoId
     let mffDay = days.untilMff()
-    if (mffDay > !1 && mffDay < totalPics + 1 || debug) {
+    if (mffDay >= 1 && mffDay <= totalPics || debug) {
+        fs.writeFileSync(__dirname + '/backups/countdown ' + new Date().toDateString() + '.db', fs.readFileSync(__dirname + '/databases/countdown.db'))
         db.lookup({})
             .then(users => {
                 pic.pickImage().then(returned => {
-                        let captionString = returns.emojiParser(mffDay) + ' MFF!! ' + returns.randomEmoji() + '\n\n📸: ' + returned.credit
+                        let captionString = returns.emojiParser(mffDay) + ' \n\n📸: ' + returned.credit
 
                         function getPhotoId(num) {
                             bot.sendPhoto(users[num].chatId, returned.buffer, {
@@ -301,7 +308,7 @@ function testForGroup(input) {
 function handleErr(error, user, command) {
     if (user) {
         bot.sendMessage(connor, 'An error has occured in ' + command + '\n' + error)
-        bot.sendMessage(user, 'Im sorry an error has occured.' + '\n' + error)
+        bot.sendMessage(user, 'Im sorry an error has occured with ' + command)
     } else {
         bot.sendMessage(connor, 'An error has occured in ' + command + '\n' + error)
     }

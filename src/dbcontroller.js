@@ -34,14 +34,14 @@ const add = function(uid, name, group) {
                         } else {
                             rej(err)
                         }
-                    })
+                    });
                 } else {
                     res('In')
                 }
             } else {
                 rej(err)
             }
-        })
+        });
     })
 }
 

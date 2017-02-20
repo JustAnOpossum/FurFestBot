@@ -39,16 +39,16 @@ const emojiParser = function(days) {
     }
     if (emojiArr.length === 1) {
         if (days === 1) {
-            return 'Tomorrow Is'
+            return 'Tomorrow is MFF!!!'
         } else {
-            return emoji.emojify(':' + emojiArr[0] + ':' + 'Days Until')
+            return emoji.emojify(':' + emojiArr[0] + ':' + ' days until MFF!')
         }
     }
     if (emojiArr.length === 2) {
-        return emoji.emojify(':' + emojiArr[0] + '::' + emojiArr[1] + ':' + 'Days Until')
+        return emoji.emojify(':' + emojiArr[0] + '::' + emojiArr[1] + ':' + ' days until MFF!')
     }
     if (emojiArr.length === 3) {
-        return emoji.emojify(':' + emojiArr[0] + '::' + emojiArr[1] + '::' + emojiArr[2] + ':' + 'Days Until')
+        return emoji.emojify(':' + emojiArr[0] + '::' + emojiArr[1] + '::' + emojiArr[2] + ':' + ' days until MFF!')
     }
 }
 
@@ -59,4 +59,4 @@ const randomEmoji = function() {
 }
 
 exports.emojiParser = emojiParser
-exports.randomEmoji = randomEmoji
+//exports.randomEmoji = randomEmoji
