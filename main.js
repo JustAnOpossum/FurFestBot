@@ -5,10 +5,9 @@ const process = require('process')
 const child = require('child_process')
 const path = require('path')
 const emoji = require('node-emoji')
-const fs = require('fs')
+const fs = require('fs-extra')
 const TelegramBot = require('node-telegram-bot-api')
 const unzip = require('unzip')
-const move = require('mv')
 const online = require('is-online')
 const pic = require('./src/pic.js')
 let token = process.env.TOKEN
@@ -232,6 +231,7 @@ bot.onText(/\/broadcast (.+)/, function(msg, match) {
 
 bot.on('document', function(msg) {
     if (msg.chat.id === connor) {
+      fs.makedirSync('zip')
         bot.downloadFile(msg.document.file_id, __dirname + '/zip/').then(zip => {
                 var name = path.parse(zip).base
                 fs.createReadStream(__dirname + '/zip/' + name).pipe(unzip.Extract({
@@ -251,7 +251,7 @@ bot.on('document', function(msg) {
                                         db.addCredit(file, item).catch(err => {
                                             handleErr(err, null, 'db add')
                                         })
-                                        move('zip/' + item, 'mff/' + item, err => {
+                                        fs.move('zip/' + item, 'mff/' + item, err => {
                                             if (err) {
                                                 handleErr(err, null, 'move file')
                                             }
@@ -260,6 +260,7 @@ bot.on('document', function(msg) {
                                     bot.sendMessage(connor, 'Added All Photos')
                                     fs.unlink('zip/' + name, function() {})
                                     fs.unlink('zip/author.txt', function() {})
+                                    fs.remove('zip')
                                 } else {
                                     handleErr(err, null, 'document')
                                 }

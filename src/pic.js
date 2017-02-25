@@ -3,6 +3,7 @@
 const path = require('path')
 const gm = require('gm')
 const fs = require('fs')
+const color = require('node-vibrant')
 const days = require('./days.js')
 const log = require('./logController.js')
 const returns = require('./returns.js')
@@ -34,14 +35,21 @@ const pickImage = function() {
         function findSize() {
             gm(path.join(__dirname, '../mff/' + mffArr[randNum])).size((err, num) => {
                 if (!err) {
-                    writeImage(num.width, num.height)
+                  color.from(`mff/${mffArr[randNum]}`).getPalette((err, palette) => {
+                    if (!err) {
+                      writeImage(num.width, num.height, palette.Vibrant.rgb)
+                    }
+                    else {
+                      rej(err)
+                    }
+                  })
                 } else {
                     rej(err)
                 }
             })
         }
 
-        function writeImage(width, height) {
+        function writeImage(width, height, palette) {
             let day = days.untilMff()
             let textW
             let textH
@@ -68,15 +76,16 @@ const pickImage = function() {
                 textW = width / daypos[determinePosition].portrait[0]
                 textH = height / daypos[determinePosition].portrait[1]
             }
+            let textColor = `rgb(${palette[0]}, ${palette[1]}, ${palette[2]})`
             gm(path.join(__dirname, '../mff/' + mffArr[randNum]))
-                .fill('rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')')
+                .fill(textColor)
                 .drawText(textW, textH, day)
-                .font(path.join(__dirname, "../fonts/font.ttf"))
+                .font(path.join(__dirname, '../fonts/font.ttf'))
                 .fontSize(width / 7)
-                .write(path.join(__dirname, "../Countdown/" + day.toString() + '.jpg'), (err) => {
+                .write(path.join(__dirname, '../Countdown/' + day.toString() + '.jpg'), (err) => {
                     if (!err) {
                         log.picture('Day ' + day + ' Generated')
-                        let file = fs.readFile(path.join(__dirname, "../Countdown/" + day + '.jpg'), (err, data) => {
+                        let file = fs.readFile(path.join(__dirname, '../Countdown/' + day + '.jpg'), (err, data) => {
                             if (!err) {
                                 db.findCredit(mffArr[randNum]).then(credit => {
                                     res({

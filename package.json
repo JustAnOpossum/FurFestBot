@@ -5,6 +5,7 @@
   "main": "main.js",
   "dependencies": {
     "diff": "^3.0.0",
+    "fs-extra": "^2.0.0",
     "gm": "^1.22.0",
     "is-online": "^6.1.0",
     "nanotimer": "^0.3.14",
