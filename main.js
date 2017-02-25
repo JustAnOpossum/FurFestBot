@@ -1,7 +1,7 @@
 'use strict'
 
 let bot
-const process = require('process') //wow
+const process = require('process')
 const child = require('child_process')
 const path = require('path')
 const emoji = require('node-emoji')
