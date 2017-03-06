@@ -231,7 +231,7 @@ bot.onText(/\/broadcast (.+)/, function(msg, match) {
 
 bot.on('document', function(msg) {
     if (msg.chat.id === connor) {
-      fs.makedirSync('zip')
+      fs.mkdirSync('zip')
         bot.downloadFile(msg.document.file_id, __dirname + '/zip/').then(zip => {
                 var name = path.parse(zip).base
                 fs.createReadStream(__dirname + '/zip/' + name).pipe(unzip.Extract({
