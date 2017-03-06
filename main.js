@@ -258,8 +258,6 @@ bot.on('document', function(msg) {
                                         })
                                     })
                                     bot.sendMessage(connor, 'Added All Photos')
-                                    fs.unlink('zip/' + name, function() {})
-                                    fs.unlink('zip/author.txt', function() {})
                                     fs.remove('zip')
                                 } else {
                                     handleErr(err, null, 'document')
