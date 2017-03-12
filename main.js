@@ -26,7 +26,7 @@ if (mode === 'production') {
             cert: __dirname + '/keys/crt.pem'
         }
     })
-    bot.setWebHook('telegram.thetechiefox.com/bot' + token, __dirname + '/keys/crt.pem')
+    bot.setWebHook('thetechiefox.com/bot' + token, __dirname + '/keys/crt.pem')
 }
 
 const days = require('./src/days.js')
