@@ -112,6 +112,9 @@ const searchPic = function(name) {
             if (!err) {
                 res(pic)
             }
+            else {
+              rej(err)
+            }
         })
     })
 }
@@ -121,7 +124,12 @@ const addPic = function(name) {
         picDb.insert({
             name: name
         }, (err, num) => {
+          if (!err) {
             res(num)
+          }
+          else {
+            rej(err)
+          }
         })
     })
 }
