@@ -44,14 +44,14 @@ const emojiParser = function(days) {
       if (days === 1) {
          return 'Tomorrow is MFF!!!'
       } else {
-         return emoji.emojify(':' + emojiArr[0] + ':' + ' days until MFF!')
+         return emoji.emojify(`:${emojiArr[0]}: days until MFF!`)
       }
    }
    if (emojiArr.length === 2) {
-      return emoji.emojify(':' + emojiArr[0] + '::' + emojiArr[1] + ':' + ' days until MFF!')
+      return emoji.emojify(`:${emojiArr[0]}::${emojiArr[1]}: days until MFF!`)
    }
    if (emojiArr.length === 3) {
-      return emoji.emojify(':' + emojiArr[0] + '::' + emojiArr[1] + '::' + emojiArr[2] + ':' + ' days until MFF!')
+      return emoji.emojify(`:${emojiArr[0]}::${emojiArr[1]}::${emojiArr[2]}: days until MFF!`)
    }
 }
 

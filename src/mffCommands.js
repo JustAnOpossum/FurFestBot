@@ -1,4 +1,5 @@
 const Promise = require('bluebird')
+const path = require('path')
 const mff = require('./bots.js').mff
 const returns = require('./returns.js')
 const days = require('./days.js')
@@ -6,8 +7,15 @@ const fs = Promise.promisifyAll(require('fs-extra'))
 const db = require('./dbcontroller.js')
 const message = require('./message.js')
 
-function startStr() {
-   return 'Hello! This bot has a MFF countdown, but will start in ' + (days.untilMff() - fs.readdirSync('mff').length) + ' days.\nThis is because I don\'t have enough pictures until then.\nIf there are any requests for the mff please message me @ConnorTheFox'
+async function startStr() {
+   let daysUntil = days.untilMff()
+   let picArr = await fs.readdirAsync(path.resolve(__dirname, '../mff'))
+   let pictureDays = picArr.length
+   if ((daysUntil - pictureDays) <= 0) {
+      return 'This is a bot that counts down until MFF, use /countdown to start it!'
+   } else {
+      return 'Hello! This bot has a MFF countdown, but will start in ' + (daysUntil - pictureDays) + ' days.\nThis is because I don\'t have enough pictures until then.\nIf there are any requests for the mff please message me @ConnorTheFox'
+   }
 }
 
 function getHelpStr() {
@@ -18,9 +26,9 @@ function getHelpStr() {
    return tempStr
 }
 
-exports.start = function(msg) {
+exports.start = async function(msg) {
    returns.generateLog(msg.chat.title || msg.chat.first_name, 'start', 'command', returns.testForGroup(msg.chat.first_name))
-   mff.sendMessage(msg.chat.id, startStr(), { parse_mode: 'markdown' })
+   mff.sendMessage(msg.chat.id, await startStr(), { parse_mode: 'markdown' })
 }
 
 exports.message = async function(msg) {
@@ -32,9 +40,11 @@ exports.message = async function(msg) {
    }
 }
 
-exports.addedToGroup = function(msg) {
-   if (msg.new_chat_participant.id === message.bot) {
-      mff.sendMessage(msg.chat.id, start(), { parse_mode: 'markdown' })
+exports.addedToGroup = async function(msg) {
+  let getBot = await mff.getMe()
+  let botId = getBot.id
+   if (msg.new_chat_participant.id === botId) {
+      mff.sendMessage(msg.chat.id, await startStr(), { parse_mode: 'markdown' })
    }
 }
 

@@ -1,7 +1,6 @@
 'use strict'
 
 const Promise = require('bluebird')
-const process = require('process')
 const fs = Promise.promisifyAll(require('fs-extra'))
 const online = Promise.promisifyAll(require('is-online'))
 const Nano = require('nanotimer')
@@ -56,19 +55,16 @@ async function checkTime() {
 
 async function sendDaily(debug) {
    let totalPics = await fs.readdirAsync('mff').length
-   let attempt = 0
-   let photoId
-   let info
    let mffDay = days.untilMff()
    if (mffDay >= 1 && mffDay <= totalPics || debug) {
-      await fs.writeFileAsync(__dirname + '/backups/countdown ' + new Date().toDateString() + '.db', fs.readFileSync(__dirname + '/databases/countdown.db'))
+      await fs.writeFileAsync(`backups/${new Date().toDateString()}.db`, await fs.readFileAsync('databases/countdown.db'))
       let users = await db.lookup({})
       let returned = await pic.pickImage()
       let captionString = `${returns.emojiParser(mffDay)} \n\n📸: ${returned.credit}`
          users.forEach(async(user) => {
             try {
                let sent = await mff.sendPhoto(user.chatId, returned.buffer, { caption: captionString })
-               returns.generateLog(info.chat.first_name, null, 'daily')
+               returns.generateLog(sent.chat.first_name, null, 'daily')
             } catch (e) {
                db.error(user)
             }
@@ -79,7 +75,7 @@ async function sendDaily(debug) {
 
 mff.onText(/\/until/, msg => {
    fs.readdir('mff', (err, img) => {
-      mff.sendMessage(msg.chat.id, (days.untilMff() - img.length) + ' Days until start')
+      mff.sendMessage(msg.chat.id, `${(days.untilMff() - img.length)} Days until start`)
    })
 })
 

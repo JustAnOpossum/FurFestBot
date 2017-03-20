@@ -1,4 +1,4 @@
-const TelegramBot = require('node-telegram-bot-api')
+const TelegramBot = require('tgfancy')
 const path = require('path')
 
 const token = process.env.TOKEN
@@ -8,7 +8,7 @@ let mff
 let admin
 if (mode === 'test') {
    mff = new TelegramBot(token, {
-      polling: true
+      polling: true,
    })
    admin = mff
 }
