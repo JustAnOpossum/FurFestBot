@@ -1,4 +1,4 @@
-const TelegramBot = require('tgfancy')
+const TelegramBot = require('node-telegram-bot-api')
 const path = require('path')
 
 const token = process.env.TOKEN
