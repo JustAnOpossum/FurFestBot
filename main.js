@@ -54,7 +54,7 @@ async function checkTime() {
 }
 
 async function sendDaily(debug) {
-   let totalPics = await fs.readdirAsync('mff').length
+   let totalPics = (await fs.readdirAsync('mff')).length
    let mffDay = days.untilMff()
    if (mffDay >= 1 && mffDay <= totalPics || debug) {
       await fs.writeFileAsync(`backups/${new Date().toDateString()}.db`, await fs.readFileAsync('databases/countdown.db'))

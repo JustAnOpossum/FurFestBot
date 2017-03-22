@@ -9,10 +9,9 @@ const message = require('./message.js')
 
 async function startStr() {
    let daysUntil = days.untilMff()
-   let picArr = await fs.readdirAsync(path.resolve(__dirname, '../mff'))
-   let pictureDays = picArr.length
+   let pictureDays = (await fs.readdirAsync(path.resolve(__dirname, '../mff'))).length
    if ((daysUntil - pictureDays) <= 0) {
-      return 'This is a bot that counts down until MFF, use /countdown to start it!'
+      return message.start
    } else {
       return 'Hello! This bot has a MFF countdown, but will start in ' + (daysUntil - pictureDays) + ' days.\nThis is because I don\'t have enough pictures until then.\nIf there are any requests for the mff please message me @ConnorTheFox'
    }
@@ -53,7 +52,7 @@ exports.countdown = async function(msg) {
    try {
       let added = await db.add(msg.chat.id, msg.chat.title || msg.chat.first_name, returns.testForGroup(msg.chat.first_name))
       if (added === 'Added') {
-         let sent = mff.sendMessage(msg.chat.id, 'Added to list!')
+         mff.sendMessage(msg.chat.id, message.countdown.added)
          mff.sendMessage(message.connor, msg.chat.title || msg.chat.first_name + ' Subscribed!')
       }
       if (added === 'In') {
@@ -68,7 +67,7 @@ exports.stopCountdown = async function(msg) {
    try {
       let remove = await db.remove(msg.chat.id)
       if (remove === 'Removed') {
-         mff.sendMessage(msg.chat.id, 'Unscribed form daily countdown')
+         mff.sendMessage(msg.chat.id, message.countdown.removed)
       }
       if (remove === 'Not Here') {
          mff.sendMessage(msg.chat.id, 'Already removed')
