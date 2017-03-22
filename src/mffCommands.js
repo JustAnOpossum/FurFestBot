@@ -53,7 +53,7 @@ exports.countdown = async function(msg) {
       let added = await db.add(msg.chat.id, msg.chat.title || msg.chat.first_name, returns.testForGroup(msg.chat.first_name))
       if (added === 'Added') {
          mff.sendMessage(msg.chat.id, message.countdown.added)
-         mff.sendMessage(message.connor, msg.chat.title || msg.chat.first_name + ' Subscribed!')
+         mff.sendMessage(message.connor, (msg.chat.title || msg.chat.first_name) + ' Subscribed!')
       }
       if (added === 'In') {
          mff.sendMessage(msg.chat.id, 'Im sorry you are already subscribed')

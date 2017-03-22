@@ -61,14 +61,17 @@ async function sendDaily(debug) {
       let users = await db.lookup({})
       let returned = await pic.pickImage()
       let captionString = `${returns.emojiParser(mffDay)} \n\n📸: ${returned.credit}`
-         users.forEach(async(user) => {
-            try {
-               let sent = await mff.sendPhoto(user.chatId, returned.buffer, { caption: captionString })
-               returns.generateLog(sent.chat.first_name, null, 'daily')
-            } catch (e) {
-               db.error(user)
-            }
-         })
+      let photoId
+         for (let x in users) {
+           try {
+             let sent = await mff.sendPhoto(users[x].chatId, (photoId || returned.buffer), {caption: captionString})
+             photoId = sent.photo[(sent.photo.length - 1)].file_id
+             returns.generateLog((sent.chat.first_name || sent.chat.title), null, 'daily')
+           }
+           catch (e) {
+             db.error(users[x])
+           }
+         }
    }
 }
 
