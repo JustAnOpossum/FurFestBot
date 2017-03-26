@@ -76,13 +76,13 @@ async function sendDaily(debug) {
 }
 
 
-mff.onText(/\/until/, msg => {
+adminBot.onText(/\/until/, msg => {
    fs.readdir('mff', (err, img) => {
       mff.sendMessage(msg.chat.id, `${(days.untilMff() - img.length)} Days until start`)
    })
 })
 
-mff.onText(/\/debug/, (msg) => {
+adminBot.onText(/\/debug/, (msg) => {
    if (msg.chat.id === message.connor) {
       sendDaily(true)
    }
