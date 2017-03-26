@@ -13,7 +13,7 @@ async function startStr() {
    if ((daysUntil - pictureDays) <= 0) {
       return message.start
    } else {
-      return 'Hello! This bot has a MFF countdown, but will start in ' + (daysUntil - pictureDays) + ' days.\nThis is because I don\'t have enough pictures until then.\nIf there are any requests for the mff please message me @ConnorTheFox'
+      return 'Hello! This bot has a MFF countdown, but will start in ' + (daysUntil - pictureDays) + ' days.\nThis is because I don\'t have enough pictures until then.\nIf there are any requests for the bot please message me @ConnorTheFox'
    }
 }
 
