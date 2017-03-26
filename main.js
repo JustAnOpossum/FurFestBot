@@ -78,7 +78,7 @@ async function sendDaily(debug) {
 
 adminBot.onText(/\/until/, msg => {
    fs.readdir('mff', (err, img) => {
-      mff.sendMessage(msg.chat.id, `${(days.untilMff() - img.length)} Days until start`)
+      adminBot.sendMessage(msg.chat.id, `${(days.untilMff() - img.length)} Days until start`)
    })
 })
 
