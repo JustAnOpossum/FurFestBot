@@ -13,8 +13,8 @@ if (mode === 'test') {
    admin = mff
 }
 if (mode === 'production') {
-  let key = path.resolve(__dirname, '../keys/key.pem')
-  let cert = path.resolve(__dirname, '../keys/crt.pem')
+   let key = path.resolve(__dirname, '../keys/key.pem')
+   let cert = path.resolve(__dirname, '../keys/crt.pem')
    mff = new TelegramBot(token, {
       webHook: {
          port: 8000,

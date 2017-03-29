@@ -22,25 +22,24 @@ exports.uploadPhoto = async function(msg) {
                   await db.addCredit(author, item)
                   fs.moveAsync(path.resolve(__dirname, '../zip/' + item), path.resolve(__dirname, '../mff/' + item))
                } catch (e) {
-                 console.log(e)
+                  console.log(e)
                   returns.handleErr(e, null, 'db add')
                }
             }
          })
          admin.sendMessage(message.connor, 'Added All Photos')
          async function deleteFolder() {
-           let zipFolder = await fs.readdirAsync(path.resolve(__dirname, '../zip/'))
-           if (zipFolder.length === 2) {
-             fs.remove(path.resolve(__dirname, '../zip/'))
-           }
-           else {
-             setTimeout(deleteFolder, 3000)
-           }
+            let zipFolder = await fs.readdirAsync(path.resolve(__dirname, '../zip/'))
+            if (zipFolder.length === 2) {
+               fs.remove(path.resolve(__dirname, '../zip/'))
+            } else {
+               setTimeout(deleteFolder, 3000)
+            }
          }
          deleteFolder()
       })
    } catch (e) {
-     console.log(e)
+      console.log(e)
       returns.handleErr(e, null, 'Upload Error')
    }
 }

@@ -23,11 +23,13 @@ let timeDrift = true
 mff.on('new_chat_participant', command.addedToGroup)
 mff.on('message', command.message)
 mff.onText(/\/start/, command.start)
+mff.onText(/\/menu/, command.menu)
 mff.onText(/\/countdown/, command.countdown)
 mff.onText(/\/stopcountdown/, command.stopCountdown)
 mff.onText(/\/info/, command.info)
 mff.onText(/\/help/, command.help)
 mff.onText(/\/daysleft/, command.daysleft)
+mff.on('callback_query', command.answerKeyboard)
 
 adminBot.onText(/\/broadcast (.+)/, admin.broadcast)
 adminBot.onText(/\/test (.+)/, admin.test)
@@ -62,16 +64,15 @@ async function sendDaily(debug) {
       let returned = await pic.pickImage()
       let captionString = `${returns.emojiParser(mffDay)} \n\n📸: ${returned.credit}`
       let photoId
-         for (let x in users) {
-           try {
-             let sent = await mff.sendPhoto(users[x].chatId, (photoId || returned.buffer), {caption: captionString})
-             photoId = sent.photo[(sent.photo.length - 1)].file_id
-             returns.generateLog((sent.chat.first_name || sent.chat.title), null, 'daily')
-           }
-           catch (e) {
-             db.error(users[x])
-           }
+      for (let x in users) {
+         try {
+            let sent = await mff.sendPhoto(users[x].chatId, (photoId || returned.buffer), { caption: captionString })
+            photoId = sent.photo[(sent.photo.length - 1)].file_id
+            returns.generateLog((sent.chat.first_name || sent.chat.title), null, 'daily')
+         } catch (e) {
+            db.error(users[x])
          }
+      }
    }
 }
 
