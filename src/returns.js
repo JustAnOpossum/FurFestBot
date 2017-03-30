@@ -73,9 +73,9 @@ const testForGroup = function(input) {
 const generateLog = function(name, command, type, group) {
    if (type === 'command') {
       if (group === true) {
-         log.command('Group: ' + name + ' Used command /' + command)
+         log.command('Group: ' + name + ' Used command ' + command)
       } else {
-         log.command(name + ' Used command /' + command)
+         log.command(name + ' Used command ' + command)
       }
    }
    if (type === 'daily') {

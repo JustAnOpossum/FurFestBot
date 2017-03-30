@@ -1,24 +1,40 @@
 const Promise = require('bluebird')
 const path = require('path')
 const mff = require('./bots.js').mff
+const admin = require('./bots.js').admin
 const returns = require('./returns.js')
 const days = require('./days.js')
 const fs = Promise.promisifyAll(require('fs-extra'))
 const db = require('./dbcontroller.js')
 const message = require('./message.js')
 
+exports.start = async function(msg) {
+   returns.generateLog(msg.chat.title || msg.chat.first_name, 'start', 'command', returns.testForGroup(msg.chat.first_name))
+   mff.sendMessage(msg.chat.id, message.start, { parse_mode: 'markdown', reply_markup: generateButtons('start') })
+}
+
+exports.menu = async function(msg) {
+   returns.generateLog(msg.chat.title || msg.chat.first_name, 'start', 'command', returns.testForGroup(msg.chat.first_name))
+   mff.sendMessage(msg.chat.id, message.start, { parse_mode: 'markdown', reply_markup: generateButtons('start') })
+}
+
+
 function generateButtons(type) {
    switch (type) {
       case 'start':
-         return { inline_keyboard: [
+         return {
+            inline_keyboard: [
                [{ text: 'Start Countdown', callback_data: 'startcountdown' }, { text: 'Stop Countdown', callback_data: 'stopcountdown' }],
                [{ text: 'Commands', callback_data: 'commands' }]
-            ] }
+            ]
+         }
          break;
       case 'command':
-         return { inline_keyboard: [
+         return {
+            inline_keyboard: [
                [{ text: 'Home', callback_data: 'start' }, { text: 'Commands', callback_data: 'commands' }]
-            ] }
+            ]
+         }
          break;
       case 'commands':
          let tempArr = []
@@ -31,25 +47,30 @@ function generateButtons(type) {
 }
 
 exports.answerKeyboard = async function answerKeyboard(item) {
-   let command = item.data
-   let chatId = item.message.chat.id
-   let messageId = item.message.message_id
+  let command = item.data
+  let chatId = item.message.chat.id
+  let messageId = item.message.message_id
+   returns.generateLog(item.message.chat.title || item.message.chat.first_name, item.data, 'command', returns.testForGroup(item.message.chat.first_name))
+
    if (command === 'start') {
-      mff.editMessageText(message.start, { chat_id: item.message.chat.id, message_id: item.message.message_id, reply_markup: generateButtons('start') })
+      mff.editMessageText(message.start, { chat_id: chatId, message_id: messageId, reply_markup: generateButtons('start') })
    }
+
    if (command === 'commands') {
-      mff.editMessageText('Command list:', { chat_id: item.message.chat.id, message_id: item.message.message_id, reply_markup: generateButtons('commands') })
+      mff.editMessageText('Command list:', { chat_id: chatId, message_id: messageId, reply_markup: generateButtons('commands') })
    }
+
    if (command === 'startcountdown') {
       let status = await startCountdown(item.message)
       if (status === 'Added') {
          mff.editMessageText(message.countdown.added, { chat_id: chatId, message_id: messageId, reply_markup: generateButtons('command') })
-         mff.sendMessage(message.connor, (item.message.chat.title || item.message.chat.first_name) + ' Subscribed!')
+         admin.sendMessage(message.connor, (item.message.chat.title || item.message.chat.first_name) + ' Subscribed!')
       }
       if (status === 'In') {
          mff.editMessageText('Im sorry you are already subscribed', { chat_id: chatId, message_id: messageId, reply_markup: generateButtons('command') })
       }
    }
+
    if (command === 'stopcountdown') {
       let status = await stopCountdown(item.message)
       if (status === 'Removed') {
@@ -59,19 +80,19 @@ exports.answerKeyboard = async function answerKeyboard(item) {
          mff.editMessageText('Not found', { chat_id: chatId, message_id: messageId, reply_markup: generateButtons('command') })
       }
    }
+
    if (command === 'info') {
-      returns.generateLog(item.message.chat.title || item.message.chat.first_name, 'info', 'command', returns.testForGroup(item.message.chat.first_name))
       mff.editMessageText(message.info, { chat_id: chatId, message_id: messageId, reply_markup: generateButtons('command') })
    }
+
    if (command === 'daysleft') {
       let day = days.untilMff()
-      returns.generateLog(item.message.chat.title || item.message.chat.first_name, 'daysleft', 'command', returns.testForGroup(item.message.chat.first_name))
       mff.editMessageText(`${day} days until MFF!`, { chat_id: chatId, message_id: messageId, reply_markup: generateButtons('command') })
    }
+   
 }
 
 async function startCountdown(msg) {
-   returns.generateLog(msg.chat.title || msg.chat.first_name, 'countdown', 'command', returns.testForGroup(msg.chat.first_name))
    try {
       let added = await db.add(msg.chat.id, msg.chat.title || msg.chat.first_name, returns.testForGroup(msg.chat.first_name))
       return added
@@ -87,16 +108,6 @@ async function stopCountdown(msg) {
    } catch (e) {
       returns.handleErr(e, msg.chat.id, 'Removing User', mff)
    }
-}
-
-exports.start = async function(msg) {
-   returns.generateLog(msg.chat.title || msg.chat.first_name, 'start', 'command', returns.testForGroup(msg.chat.first_name))
-   mff.sendMessage(msg.chat.id, message.start, { parse_mode: 'markdown', reply_markup: generateButtons('start') })
-}
-
-exports.menu = async function(msg) {
-   returns.generateLog(msg.chat.title || msg.chat.first_name, 'start', 'command', returns.testForGroup(msg.chat.first_name))
-   mff.sendMessage(msg.chat.id, message.start, { parse_mode: 'markdown', reply_markup: generateButtons('start') })
 }
 
 exports.message = async function(msg) {

@@ -1,7 +1,7 @@
 module.exports = {
    connor: 119682002,
    help: {
-      Countdown: 'startcountdown',
+      'Start Countdown': 'startcountdown',
       'Stop Countdown': 'stopcountdown',
       Info: 'info',
       'Days Left': 'daysleft'
