@@ -22,7 +22,7 @@ if (mode === 'production') {
          cert: cert
       }
    })
-   mff.setWebHook('https://thetechiefox.com/bot' + token)
+   mff.setWebHook('https://nerdfox.me/bot1' + token)
    admin = new TelegramBot(adminToken, {
       webHook: {
          port: 8003,
@@ -30,7 +30,7 @@ if (mode === 'production') {
          cert: cert
       }
    })
-   admin.setWebHook('https://thetechiefox.com/bot' + adminToken)
+   admin.setWebHook('https://nerdfox.me/bot1' + adminToken)
 }
 
 exports.mff = mff
