@@ -78,10 +78,11 @@ $RECYCLE.BIN/
 node-modules
 mff
 launch.txt
-logs
 keys
 backups
 Countdown
-databases/
+databases/countdown.db
 test.js
 .vscode
+launchc.txt
+logs/mffbot.log

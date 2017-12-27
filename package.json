@@ -1,27 +1,24 @@
 {
   "name": "furfestbot",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Telegram bot that counts down the days until MFF",
   "main": "main.js",
   "dependencies": {
-    "bluebird": "^3.5.0",
+    "bluebird": "^3.5.1",
     "fs-extra": "^2.1.2",
     "gm": "^1.23.0",
-    "is-online": "^7.0.0",
-    "nanotimer": "^0.3.14",
-    "nedb": "^1.8.0",
+    "is-empty": "^1.2.0",
+    "is-reachable": "^2.3.3",
+    "mongoose": "^4.13.7",
     "node-emoji": "^1.5.1",
     "node-telegram-bot-api": "^0.27.0",
     "node-vibrant": "^3.0.0-alpha.2",
     "unzip": "^0.1.11",
-    "winston": "^2.3.1",
-    "snyk": "^1.41.1"
+    "winston": "^2.3.1"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -32,6 +29,5 @@
   "bugs": {
     "url": "https://github.com/ConnorTheFox/FurFestBot/issues"
   },
-  "homepage": "https://github.com/ConnorTheFox/FurFestBot#readme",
-  "snyk": true
+  "homepage": "https://github.com/ConnorTheFox/FurFestBot#readme"
 }

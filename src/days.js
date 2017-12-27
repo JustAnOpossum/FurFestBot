@@ -1,7 +1,7 @@
 const untilMff = function() {
-   var mff = new Date(2017, 10, 30).getTime()
-   var now = Date.now()
-   var untillMff = mff - now
+   let mff = new Date(2018, 10, 29).getTime()
+   let now = Date.now()
+   let untillMff = mff - now
    return Math.ceil(untillMff / 86400000)
 }
 
