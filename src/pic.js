@@ -14,40 +14,45 @@ const db = require('./dbcontroller.js')
 const genImage = function () {
 	return new Promise(async (res, rej) => {
 		let mffpics = await fs.readdirAsync(path.join(__dirname, '../mff'))
-		let randNum = Math.floor(Math.random() * mffpics.length)
+		let randNum
 
-		gm(path.join(__dirname, '../mff/' + mffpics[randNum])).size((err, num) => {
-			if (!err) {
-				color.from(path.join(__dirname, ('../mff/' + mffpics[randNum]))).getPalette((err, palette) => {
+		function findImage() {
+			randNum = Math.floor(Math.random() * mffpics.length)
+			if (path.parse(mffpics[randNum]).ext === '.jpg') {
+				gm(path.join(__dirname, '../mff/' + mffpics[randNum])).size((err, num) => {
 					if (!err) {
-						writeImage(num.width, num.height, palette.Vibrant._rgb)
+						color.from(path.join(__dirname, ('../mff/' + mffpics[randNum]))).getPalette((err, palette) => {
+							if (!err) {
+								writeImage(num.width, num.height, palette.Vibrant._rgb)
+							} else {
+								rej(err)
+							}
+						})
 					} else {
 						rej(err)
 					}
 				})
-			} else {
-				rej(err)
 			}
-		})
+		}
+		findImage()
 
 		function writeImage(width, height, palette) {
-			// days.untilMff()
-			let day = 120
+			let day =  days.untilMff()
 			let textW
 			let textH
-			//Larger Number moves it to the left
+			//Larger Number moves it to the left, Smaller moves it down
 			let daypos = {
 				3: {
-					landscape: [4.2, 1.8],
-					portrait: [4.4, 2]
+					landscape: [4.2, 1.68],
+					portrait: [4.4, 1.8]
 				},
 				2: {
-					landscape: [3.2, 1.8],
-					portrait: [3.1, 2]
+					landscape: [3.2, 1.68],
+					portrait: [3.1, 1.8]
 				},
 				1: {
-					landscape: [2.4, 1.8],
-					portrait: [2.4, 2]
+					landscape: [2.4, 1.68],
+					portrait: [2.4, 1.8]
 				}
 			}
 			let determinePosition = day.toString().length
