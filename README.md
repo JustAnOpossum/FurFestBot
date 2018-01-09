@@ -18,9 +18,13 @@ sudo apt install graphicsmagick
 sudo apt install mongodb
 ```
 
-Run your bot behind a reverse proxy with a path of /bot(token). If you don't know what this is [read this](https://www.nginx.com/resources/admin-guide/reverse-proxy/)
+You need two Telegram bot API keys, one for the main bot and another for the admin bot.
+
+Run your bot behind a https nginx reverse proxy with a path of /bot(token). If you don't know what this is [read this](https://www.nginx.com/resources/admin-guide/reverse-proxy/)
 
 ex: /bot123abc58347589
+
+Finally add cron.js to the crontab to send the daily picture.
 
 If you want to run this bot on windows then you need to add graphicsmagick to your path and install mongodb.
 
@@ -52,6 +56,14 @@ DBNAME: Name for the mongodb database.
 
 WEBHOOK: URL for the webhook to your server. ex: example.com
 
+
+## Admin Commands:
+
+/logs: Shows log file.
+
+/users: Shows how many users are on the bot.
+
+/upload (credit): Reads zip file from /tmp
 
 # Example Picture
 

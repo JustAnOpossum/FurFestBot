@@ -1,6 +1,7 @@
 const emoji = require('node-emoji')
 const log = require('./logController.js')
 const messages = require('./message.js')
+const admin = require('./bots.js').admin
 
 const createCaption = function (days) {
 	let emojiArr = []
@@ -79,7 +80,7 @@ const generateLog = function (name, command, type) {
 }
 
 const handleErr = function (error, command) {
-	admin.sendMessage(message.owner, 'An error has occured in ' + command + '\n' + error)
+	admin.sendMessage(messages.owner, 'An error has occured in ' + command + '\n' + error)
 }
 
 

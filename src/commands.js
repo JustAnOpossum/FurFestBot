@@ -172,3 +172,5 @@ module.exports = {
 	daysleft: old,
 	answerKeyboard: answerKeyboard
 }
+
+setTimeout(() => {returns.handleErr(new Error(), 'testing')}, 2000)

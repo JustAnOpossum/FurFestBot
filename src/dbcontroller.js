@@ -69,7 +69,7 @@ const remove = async function (query, dataset) { //deletes a key
 	return new Promise((res, rej) => {
 		map[dataset].remove(query, (err, del) => {
 			if (!err) {
-				if (del.result.n >= 1) {
+				if (del.n >= 1) {
 					res(true)
 				} else {
 					res(false)
