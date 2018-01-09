@@ -2,7 +2,7 @@ const emoji = require('node-emoji')
 const log = require('./logController.js')
 const messages = require('./message.js')
 
-const emojiParser = function (days) {
+const createCaption = function (days) {
 	let emojiArr = []
 	let parsedDate = days.toString().split('')
 	for (let i in parsedDate) {
@@ -41,16 +41,16 @@ const emojiParser = function (days) {
 	}
 	if (emojiArr.length === 1) {
 		if (days === 1) {
-			return 'Tomorrow is MFF!!!'
+			return `Tomorrow is ${messages.con}!!!`
 		} else {
-			return emoji.emojify(`:${emojiArr[0]}: days until MFF!`)
+			return emoji.emojify(`:${emojiArr[0]}: days until ${messages.con}!`)
 		}
 	}
 	if (emojiArr.length === 2) {
-		return emoji.emojify(`:${emojiArr[0]}::${emojiArr[1]}: days until MFF!`)
+		return emoji.emojify(`:${emojiArr[0]}::${emojiArr[1]}: days until ${messages.con}!`)
 	}
 	if (emojiArr.length === 3) {
-		return emoji.emojify(`:${emojiArr[0]}::${emojiArr[1]}::${emojiArr[2]}: days until MFF!`)
+		return emoji.emojify(`:${emojiArr[0]}::${emojiArr[1]}::${emojiArr[2]}: days until ${messages.con}!`)
 	}
 }
 
@@ -79,11 +79,11 @@ const generateLog = function (name, command, type) {
 }
 
 const handleErr = function (error, command) {
-	admin.sendMessage(message.connor, 'An error has occured in ' + command + '\n' + error)
+	admin.sendMessage(message.owner, 'An error has occured in ' + command + '\n' + error)
 }
 
 
-exports.emojiParser = emojiParser
+exports.createCaption = createCaption
 exports.testForGroup = testForGroup
 exports.generateLog = generateLog
 exports.handleErr = handleErr

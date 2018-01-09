@@ -5,6 +5,7 @@ const path = require('path')
 const gm = require('gm')
 const fs = Promise.promisifyAll(require('fs-extra'))
 const color = require('node-vibrant')
+const debug = require('debug')('pic')
 const days = require('./days.js')
 const log = require('./logController.js')
 const returns = require('./returns.js')
@@ -13,16 +14,17 @@ const db = require('./dbcontroller.js')
 
 const genImage = function () {
 	return new Promise(async (res, rej) => {
-		let mffpics = await fs.readdirAsync(path.join(__dirname, '../mff'))
+		let pics = await fs.readdirAsync(path.join(__dirname, '../pics'))
 		let randNum
 
 		function findImage() {
-			randNum = Math.floor(Math.random() * mffpics.length)
-			if (path.parse(mffpics[randNum]).ext === '.jpg') {
-				gm(path.join(__dirname, '../mff/' + mffpics[randNum])).size((err, num) => {
+			randNum = Math.floor(Math.random() * pics.length)
+			if (path.parse(pics[randNum]).ext === '.jpg') {
+				gm(path.join(__dirname, '../pics/' + pics[randNum])).size((err, num) => {
 					if (!err) {
-						color.from(path.join(__dirname, ('../mff/' + mffpics[randNum]))).getPalette((err, palette) => {
+						color.from(path.join(__dirname, ('../pics/' + pics[randNum]))).getPalette((err, palette) => {
 							if (!err) {
+								debug('Got photo colors.')
 								writeImage(num.width, num.height, palette.Vibrant._rgb)
 							} else {
 								rej(err)
@@ -37,22 +39,24 @@ const genImage = function () {
 		findImage()
 
 		function writeImage(width, height, palette) {
-			let day =  days.untilMff()
+			const day = days.until()
+			const landscapeHeight = 1.65 //Constant for landscape height
+			const portraitHeight = 1.8 //Constant for portrait height
 			let textW
 			let textH
 			//Larger Number moves it to the left, Smaller moves it down
-			let daypos = {
+			const daypos = {
 				3: {
-					landscape: [4.2, 1.68],
-					portrait: [4.4, 1.8]
+					landscape: [4.4, landscapeHeight],
+					portrait: [4.4, portraitHeight]
 				},
 				2: {
-					landscape: [3.2, 1.68],
-					portrait: [3.1, 1.8]
+					landscape: [3.2, landscapeHeight],
+					portrait: [3.2, portraitHeight]
 				},
 				1: {
-					landscape: [2.4, 1.68],
-					portrait: [2.4, 1.8]
+					landscape: [2.4, landscapeHeight],
+					portrait: [2.4, portraitHeight]
 				}
 			}
 			let determinePosition = day.toString().length
@@ -64,7 +68,8 @@ const genImage = function () {
 				textH = height / daypos[determinePosition].portrait[1]
 			}
 			let textColor = `rgb(${palette[0]}, ${palette[1]}, ${palette[2]})`
-			gm(path.join(__dirname, '../mff/' + mffpics[randNum]))
+			debug('Preparing to generate photo.')
+			gm(path.join(__dirname, '../pics/' + pics[randNum]))
 				.fill(textColor)
 				.drawText(textW, textH, day)
 				.font(path.join(__dirname, '../fonts/Notes.ttf'))
@@ -74,7 +79,8 @@ const genImage = function () {
 						log.picture('Day ' + day + ' Generated')
 						let file = fs.readFile(path.join(__dirname, '../countdown/' + day + '.jpg'), (err, data) => {
 							if (!err) {
-								db.find({photo:mffpics[randNum]}, 'credit').then(credit => {
+								debug('Photo gen complete writing file.')
+								db.find({photo:pics[randNum]}, 'credit').then(credit => {
 									res({
 										buffer: data,
 										credit: credit[0].url

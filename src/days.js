@@ -1,8 +1,8 @@
-const untilMff = function() {
-   let mff = new Date(2018, 10, 29).getTime()
+const until = function() {
+   let con = new Date(2018, 10, 29).getTime() //Edit the date here for your con
    let now = Date.now()
-   let untillMff = mff - now
-   return Math.ceil(untillMff / 86400000)
+   let until = con - now
+   return Math.ceil(until / 86400000)
 }
 
-exports.untilMff = untilMff
+exports.until = until

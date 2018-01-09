@@ -1,0 +1,5 @@
+con
+host
+port
+dbName
+webhook

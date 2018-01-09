@@ -14,11 +14,11 @@ exports.uploadPhoto = async function (msg) {
         let unzipPipe = zipFile.pipe(unzip.Parse())
             .on('entry', async entry => {
                 let photo = entry.path
-                entry.pipe(fs.createWriteStream(`mff/${photo}`))
+                entry.pipe(fs.createWriteStream(`pics/${photo}`))
                 db.add({ photo: photo, url: url }, 'credit')
             })
             .on('close', () => {
-                admin.sendMessage(message.connor, 'All photos uploaded')
+                admin.sendMessage(message.owner, 'All photos uploaded')
                 fs.unlink('/tmp/photos.zip')
             })
     } catch (e) {
@@ -28,31 +28,32 @@ exports.uploadPhoto = async function (msg) {
 }
 
 exports.getUsers = async function (msg) {
-    if (msg.chat.id === message.connor) {
+    if (msg.chat.id === message.owner) {
         let tempStr = ''
         let users = await db.find({}, 'users')
         users.forEach(user => {
-            tempStr += `User: ${user.name}${' '.repeat(10)}Group: ${user.group}\n`
+            tempStr += `${user.name}\n`
         })
-        admin.sendMessage(message.connor, tempStr)
+        tempStr += users.length
+        admin.sendMessage(message.owner, tempStr)
     }
 }
 
 exports.getLogs = async function (msg) {
-    if (msg.chat.id === message.connor) {
+    if (msg.chat.id === message.owner) {
         let tempStr = ''
-        let log = await fs.readFileAsync(__dirname + '/../logs/mffbot.log', 'utf8')
+        let log = await fs.readFileAsync(__dirname + '/../logs/bot.log', 'utf8')
         let split = log.split('\n').reverse()
         for (let x = 1; x <= 6; x++) {
             let json = JSON.parse(split[x])
             tempStr += `${json.level}: ${json.message} ${json.timestamp}\n\n`
         }
-        admin.sendMessage(message.connor, tempStr)
+        admin.sendMessage(message.owner, tempStr)
     }
 }
 
 exports.broadcast = async function (msg, match) {
-    if (msg.chat.id === message.connor) {
+    if (msg.chat.id === message.owner) {
         let users = await db.lookup({})
         users.forEach(id => {
             admin.sendMessage(id.chatId, match[1], { parse_mode: 'Markdown' })
@@ -61,7 +62,7 @@ exports.broadcast = async function (msg, match) {
 }
 
 exports.test = function (msg, match) {
-    if (msg.chat.id === message.connor) {
-        admin.sendMessage(message.connor, match[1], { parse_mode: 'Markdown' })
+    if (msg.chat.id === message.owner) {
+        admin.sendMessage(message.owner, match[1], { parse_mode: 'Markdown' })
     }
 }

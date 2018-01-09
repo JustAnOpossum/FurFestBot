@@ -1,40 +1,34 @@
 const TelegramBot = require('node-telegram-bot-api')
-const path = require('path')
 
 const token = process.env.TOKEN
 const adminToken = process.env.ADMIN
 const mode = process.env.TYPE
-let mff
+const wehook = process.env.WEBHOOK
+let bot
 let admin
 if (mode === 'test') {
-    mff = new TelegramBot(token, {
+    bot = new TelegramBot(token, {
         polling: true,
     })
-    admin = mff
+    admin = bot
 }
 if (mode === 'production') {
-    let key = path.resolve(__dirname, '../keys/key.pem')
-    let cert = path.resolve(__dirname, '../keys/crt.pem')
-    mff = new TelegramBot(token, {
+    bot = new TelegramBot(token, {
         webHook: {
-            port: 8000,
-            key: key,
-            cert: cert
+            port: 8000
         }
     })
-    mff.setWebHook('https://nerdfox.me/bot1' + token)
+    bot.setWebHook(`https://${webhook}/bot${token}`)
     admin = new TelegramBot(adminToken, {
         webHook: {
-            port: 8003,
-            key: key,
-            cert: cert
+            port: 8003
         }
     })
-    admin.setWebHook('https://nerdfox.me/bot1' + adminToken)
+    admin.setWebHook(`https://${webhook}/bot${adminToken}`)
 }
 if (mode === 'send') {
-    mff = new TelegramBot(token)
+    bot = new TelegramBot(token)
 }
 
-exports.mff = mff
+exports.bot = bot
 exports.admin = admin

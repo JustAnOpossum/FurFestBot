@@ -2,7 +2,9 @@ const path = require('path')
 const empty = require('is-empty')
 const mongoose = require('mongoose')
 const returns = require('./returns.js')
-mongoose.connect('mongodb://10.0.0.150/FurfestBot', { useMongoClient: true })
+const process = require('process')
+const dbString = `${process.env.HOST || 'localhost'}:${process.env.PORT || '27017'}/${process.env.DBNAME}`
+mongoose.connect(`mongodb://${dbString}`)
 mongoose.Promise = require('bluebird')
 
 let userSchema = new mongoose.Schema({

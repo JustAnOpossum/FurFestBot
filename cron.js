@@ -2,26 +2,29 @@ const Promise = require('bluebird')
 const online = require('is-reachable')
 const process = require('process')
 const fs = Promise.promisifyAll(require('fs-extra'))
+const debug = require('debug')('cron')
 const db = require('./src/dbcontroller')
 const pic = require('./src/pic.js')
 const log = require('./src/logController.js')
 const returns = require('./src/returns.js')
 const days = require('./src/days.js')
-const mff = require('./src/bots.js').mff
+const bot = require('./src/bots.js').bot
 
 async function sendDaily() {
-	let totalPics = (await fs.readdirAsync('./mff')).length
-	let mffDay = days.untilMff()
-	if (mffDay >= 1) {
+	let totalPics = (await fs.readdirAsync('./pics')).length
+	let day = days.until()
+	if (day >= 1) {
 		let returned = await pic.genImage()
-		let captionString = `${returns.emojiParser(mffDay)} \n\n📸: ${returned.credit}`
+		let captionString = `${returns.createCaption(day)} \n\n📸: ${returned.credit}`
 		let users = await db.find({}, 'users')
+		debug('Got photo')
 		let photoId
 		for (let x in users) {
 			try {
-				let sent = await mff.sendPhoto(users[x].chatId, (photoId || returned.buffer), { caption: captionString })
+				let sent = await bot.sendPhoto(users[x].chatId, (photoId || returned.buffer), { caption: captionString })
 				photoId = sent.photo[(sent.photo.length - 1)].file_id
 				returns.generateLog((sent.chat.first_name || sent.chat.title), null, 'daily')
+				debug('Sent image')
 			} catch (e) {
 				if (e.response.body.error_code === 403) {
 					db.remove(users[x], 'users')
@@ -41,6 +44,6 @@ online('https://api.telegram.org').then(status => {
 				clearInterval(waitForOnline)
 				sendDaily()
 			}
-		}, 3000)
+		}, 60000)
 	}
 })

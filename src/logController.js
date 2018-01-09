@@ -22,7 +22,7 @@ let logger = new(winston.Logger)({
             let seconds = date.toLocaleTimeString()
             return days + ' ' + seconds
          },
-         filename: './logs/mffbot.log',
+         filename: './logs/bot.log',
          level: 'command',
          level: 'daily',
          level: 'query',
