@@ -20,6 +20,8 @@ sudo apt install mongodb
 
 You need two Telegram bot API keys, one for the main bot and another for the admin bot.
 
+To upload photos use the upload.js script. The options for it are documented below. You will also need to use the DBNAME environment variable. And if needed the HOST and PORT variables.
+
 Run your bot behind a https nginx reverse proxy with a path of /bot(token). If you don't know what this is [read this](https://www.nginx.com/resources/admin-guide/reverse-proxy/)
 
 ex: /bot123abc58347589
@@ -63,7 +65,12 @@ WEBHOOK: URL for the webhook to your server. ex: example.com
 
 /users: Shows how many users are on the bot.
 
-/upload (credit): Reads zip file from /tmp
+## Upload Script
+
+--zip: The name of the zip file you want to upload. (Required)
+
+--credit url for the credit. (Required)
+
 
 # Example Picture
 

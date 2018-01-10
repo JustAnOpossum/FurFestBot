@@ -21,7 +21,7 @@ async function sendDaily() {
 		let photoId
 		for (let x in users) {
 			try {
-				let sent = await bot.sendPhoto(users[x].chatId, (photoId || returned.buffer), { caption: captionString })
+				let sent = await bot.sendPhoto(users[x].chatId, (photoId || returned.buffer), { caption: captionString }, {contentType: 'image/jpeg'})
 				photoId = sent.photo[(sent.photo.length - 1)].file_id
 				returns.generateLog((sent.chat.first_name || sent.chat.title), null, 'daily')
 				debug('Sent image')

@@ -81,7 +81,7 @@ const remove = async function (query, dataset) { //deletes a key
 	})
 }
 
-const find = async function (query, dataset) {
+const find = async function (query, dataset) { //Finds an item
 	return new Promise((res, rej) => {
 		map[dataset].find(query, (err, result) => {
 			if (!err) {

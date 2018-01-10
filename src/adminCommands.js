@@ -2,30 +2,9 @@ const Promise = require('bluebird')
 const db = require('./dbcontroller.js')
 const admin = require('./bots.js').admin
 const fs = Promise.promisifyAll(require('fs-extra'))
-const unzip = require('unzip')
 const path = require('path')
 const returns = require('./returns.js')
 const message = require('./message.js')
-
-exports.uploadPhoto = async function (msg) {
-    try {
-        let url = msg.text.replace('/upload ', '')
-        let zipFile = fs.createReadStream('/tmp/photos.zip')
-        let unzipPipe = zipFile.pipe(unzip.Parse())
-            .on('entry', async entry => {
-                let photo = entry.path
-                entry.pipe(fs.createWriteStream(`pics/${photo}`))
-                db.add({ photo: photo, url: url }, 'credit')
-            })
-            .on('close', () => {
-                admin.sendMessage(message.owner, 'All photos uploaded')
-                fs.unlink('/tmp/photos.zip')
-            })
-    } catch (e) {
-        console.log(e)
-        returns.handleErr(e, null, 'Upload Error')
-    }
-}
 
 exports.getUsers = async function (msg) {
     if (msg.chat.id === message.owner) {
