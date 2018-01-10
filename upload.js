@@ -24,7 +24,7 @@ let unzipPipe = zipFile.pipe(unzip.Parse())
     })
     .on('close', () => {
         fs.unlink(opts.zip)
-        console.log('\n')
+        console.log('\nUpload Completed')
         process.exit(0)
     })
 
