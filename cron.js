@@ -11,39 +11,42 @@ const days = require('./src/days.js')
 const bot = require('./src/bots.js').bot
 
 async function sendDaily() {
-	let totalPics = (await fs.readdirAsync('./pics')).length
 	let day = days.until()
-	if (day >= 1) {
-		let returned = await pic.genImage()
-		let captionString = `${returns.createCaption(day)} \n\n📸: ${returned.credit}`
-		let users = await db.find({}, 'users')
-		debug('Got photo')
-		let photoId
-		for (let x in users) {
-			try {
-				let sent = await bot.sendPhoto(users[x].chatId, (photoId || returned.buffer), { caption: captionString }, {contentType: 'image/jpeg'})
-				photoId = sent.photo[(sent.photo.length - 1)].file_id
-				returns.generateLog((sent.chat.first_name || sent.chat.title), null, 'daily')
-				debug('Sent image')
-			} catch (e) {
-				if (e.response.body.error_code === 403) {
-					db.remove(users[x], 'users')
-				}
+	let returned = await pic.genImage()
+	let captionString = `${returns.createCaption(day)} \n\n📸: ${returned.credit}`
+	let users = await db.find({}, 'users')
+	debug('Got photo')
+	let photoId
+	for (let x in users) {
+		try {
+			let sent = await bot.sendPhoto(users[x].chatId, (photoId || returned.buffer), { caption: captionString }, { contentType: 'image/jpeg' })
+			photoId = sent.photo[(sent.photo.length - 1)].file_id
+			returns.generateLog((sent.chat.first_name || sent.chat.title), null, 'daily')
+			debug('Sent image')
+		} catch (e) {
+			if (e.response.body.error_code === 403) {
+				db.remove(users[x], 'users')
 			}
 		}
-		process.exit(0)
 	}
+	process.exit(0)
 }
 
-online('https://api.telegram.org').then(status => {
-	if(status) {
-		sendDaily()
-	} else {
-		let waitForOnline = setInterval(async () => {
-			if (await online('https://api.telegram.org')) {
-				clearInterval(waitForOnline)
-				sendDaily()
-			}
-		}, 60000)
-	}
-})
+
+let day = days.until()
+if (day >= 1 && day <= 150) {
+	online('https://api.telegram.org').then(status => {
+		if (status) {
+			sendDaily()
+		} else {
+			let waitForOnline = setInterval(async () => {
+				if (await online('https://api.telegram.org')) {
+					clearInterval(waitForOnline)
+					sendDaily()
+				}
+			}, 60000)
+		}
+	})
+} else {
+	process.exit(0)
+}
