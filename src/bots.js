@@ -3,7 +3,7 @@ const TelegramBot = require('node-telegram-bot-api')
 const token = process.env.TOKEN
 const adminToken = process.env.ADMIN
 const mode = process.env.TYPE
-const wehook = process.env.WEBHOOK
+const webhook = process.env.WEBHOOK
 let bot
 let admin
 if (mode === 'test') {
