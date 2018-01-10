@@ -86,3 +86,5 @@ test.js
 .vscode
 launchc.txt
 logs/mffbot.log
+countdown.db
+new.txt
