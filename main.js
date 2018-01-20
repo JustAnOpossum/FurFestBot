@@ -23,3 +23,9 @@ adminBot.onText(/\/test (.+)/, admin.test)
 adminBot.onText(/\/users/, admin.getUsers)
 adminBot.onText(/\/logs/, admin.getLogs)
 adminBot.onText(/\/upload/, admin.uploadPhoto)
+
+const memwatch = require('memwatch-next')
+
+memwatch.on('leak', (i) => {
+    bot.sendMessage(message.owner, JSON.stringify(i))
+})

@@ -11,6 +11,7 @@
     "infozip": "0.0.2",
     "is-empty": "^1.2.0",
     "is-reachable": "^2.3.3",
+    "memwatch-next": "^0.3.0",
     "minimist": "^1.2.0",
     "mongoose": "^5.0.0-rc2",
     "nedb": "^1.8.0",
