@@ -20,9 +20,9 @@ function generateButtons(type, buttonChoice) { //This creates buttons for the me
 		case 'start':
 			let countdownText = []
 			if (empty(buttonChoice)) {
-				countdownText.push({ text: 'Start Countdown', callback_data: 'startcountdown' })
+				countdownText.push({ text: 'Subscribe To Countdown', callback_data: 'startcountdown' })
 			} else {
-				countdownText.push({ text: 'Stop Countdown', callback_data: 'stopcountdown' })
+				countdownText.push({ text: 'Unsubscribe From Countdown', callback_data: 'stopcountdown' })
 			}
 			return {
 				inline_keyboard: [
@@ -40,7 +40,7 @@ function generateButtons(type, buttonChoice) { //This creates buttons for the me
 			break;
 		case 'commands':
 			let tempArr = []
-			for (let x in message.help) {
+			for (let x in message.help) { //This is for commands list
 				tempArr.push([{ text: x, callback_data: message.help[x] }])
 			}
 			tempArr.push([{ text: 'Back to Home', callback_data: 'start' }])

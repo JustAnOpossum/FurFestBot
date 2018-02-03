@@ -15,30 +15,28 @@ const db = require('./dbcontroller.js')
 const genImage = function () {
 	return new Promise(async (res, rej) => {
 		let pics = await fs.readdirAsync(path.join(__dirname, '../pics'))
-		let randNum
 
-		function findImage() {
-			randNum = Math.floor(Math.random() * pics.length)
-			if (path.parse(pics[randNum]).ext === '.jpg') {
-				gm(path.join(__dirname, '../pics/' + pics[randNum])).size((err, num) => {
-					if (!err) {
-						color.from(path.join(__dirname, ('../pics/' + pics[randNum]))).getPalette((err, palette) => {
-							if (!err) {
-								debug('Got photo colors.')
-								writeImage(num.width, num.height, palette.Vibrant._rgb)
-							} else {
-								rej(err)
-							}
-						})
-					} else {
-						rej(err)
-					}
-				})
-			}
+		let photos = await db.find({ used: false }, 'credit')
+		let photo = photos[Math.floor(Math.random() * photos.length)].photo
+		await db.update({photo: photo}, { used: true }, 'credit')
+		if (path.parse(photo).ext === '.jpg') {
+			gm(path.join(__dirname, '../pics/' + photo)).size((err, num) => {
+				if (!err) {
+					color.from(path.join(__dirname, ('../pics/' + photo))).getPalette((err, palette) => {
+						if (!err) {
+							debug('Got photo colors.')
+							writeImage(num.width, num.height, palette.Vibrant._rgb, photo)
+						} else {
+							rej(err)
+						}
+					})
+				} else {
+					rej(err)
+				}
+			})
 		}
-		findImage()
 
-		function writeImage(width, height, palette) {
+		function writeImage(width, height, palette, photo) {
 			const day = days.until()
 			const landscapeHeight = 1.65 //Constant for landscape height
 			const portraitHeight = 1.8 //Constant for portrait height
@@ -69,7 +67,7 @@ const genImage = function () {
 			}
 			let textColor = `rgb(${palette[0]}, ${palette[1]}, ${palette[2]})`
 			debug('Preparing to generate photo.')
-			gm(path.join(__dirname, '../pics/' + pics[randNum]))
+			gm(path.join(__dirname, '../pics/' + photo))
 				.fill(textColor)
 				.drawText(textW, textH, day)
 				.font(path.join(__dirname, '../fonts/Notes.ttf'))
@@ -80,7 +78,7 @@ const genImage = function () {
 						let file = fs.readFile(path.join(__dirname, '../countdown/' + day + '.jpg'), (err, data) => {
 							if (!err) {
 								debug('Photo gen complete writing file.')
-								db.find({photo:pics[randNum]}, 'credit').then(credit => {
+								db.find({ photo: photo }, 'credit').then(credit => {
 									res({
 										buffer: data,
 										credit: credit[0].url

@@ -16,7 +16,7 @@ let unzipPipe = zipFile.pipe(unzip.Parse())
         try {
             let photo = entry.path
             entry.pipe(fs.createWriteStream(`pics/${photo}`))
-            await db.add({ photo: photo, url: url }, 'credit')
+            await db.add({ photo: photo, url: url, used: false }, 'credit')
             updateProgress()
         } catch (e) {
             console.log(e)

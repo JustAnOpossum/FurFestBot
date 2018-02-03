@@ -4,8 +4,8 @@ const con = process.env.CON
 module.exports = {
    owner: 119682002, //Your chat ID goes here
    help: { //Don't touch these are for the menu
-      'Start Countdown': 'startcountdown',
-      'Stop Countdown': 'stopcountdown',
+      'Subscribe To Countdown': 'startcountdown',
+      'Unsubscribe From Countdown': 'stopcountdown',
       Info: 'info',
       'Days Left': 'daysleft'
    },

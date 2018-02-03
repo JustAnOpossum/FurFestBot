@@ -15,15 +15,22 @@ let userSchema = new mongoose.Schema({
 
 let creditSchema = new mongoose.Schema({
 	photo: String,
-	url: String
+	url: String,
+	used: Boolean
+})
+
+let photoSchema = new mongoose.Schema({
+	photo: String
 })
 
 let User = mongoose.model('users', userSchema)
 let Credit = mongoose.model('credit', creditSchema)
+let Photo = mongoose.model('photos', photoSchema)
 
 let map = { //Add dataset here for mapping
 	'users': User,
-	'credit': Credit
+	'credit': Credit,
+	'photos': Photo
 }
 
 async function dupCheck(query, dataset) { //Checks for if a key is already in the database
