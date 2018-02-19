@@ -16,21 +16,21 @@ let userSchema = new mongoose.Schema({
 let creditSchema = new mongoose.Schema({
 	photo: String,
 	url: String,
-	used: Boolean
+	used: Boolean,
+	name: String
 })
 
-let photoSchema = new mongoose.Schema({
-	photo: String
+let nextSchema = new mongoose.Schema({
+	credit: Array,
+	next: Number
 })
 
 let User = mongoose.model('users', userSchema)
 let Credit = mongoose.model('credit', creditSchema)
-let Photo = mongoose.model('photos', photoSchema)
 
 let map = { //Add dataset here for mapping
 	'users': User,
 	'credit': Credit,
-	'photos': Photo
 }
 
 async function dupCheck(query, dataset) { //Checks for if a key is already in the database
@@ -100,9 +100,22 @@ const find = async function (query, dataset) { //Finds an item
 	})
 }
 
+const distinct = function (key, query, dataset) {
+	return new Promise((res, rej) => {
+		map[dataset].distinct(key, query, (err, data) => {
+			if (!err) {
+				res(data)
+			} else {
+				rej(err)
+			}
+		})
+	})
+}
+
 module.exports = {
 	add: add,
 	update: update,
 	remove: remove,
 	find: find,
+	distinct: distinct
 }

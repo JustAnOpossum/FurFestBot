@@ -15,17 +15,18 @@ const db = require('./dbcontroller.js')
 const genImage = function () {
 	return new Promise(async (res, rej) => {
 		let pics = await fs.readdirAsync(path.join(__dirname, '../pics'))
-
-		let photos = await db.find({ used: false }, 'credit')
-		let photo = photos[Math.floor(Math.random() * photos.length)].photo
-		await db.update({photo: photo}, { used: true }, 'credit')
-		if (path.parse(photo).ext === '.jpg') {
-			gm(path.join(__dirname, '../pics/' + photo)).size((err, num) => {
+		let photoCredit = await db.distinct('name', {used:false}, 'credit')
+		let photoName = photoCredit[Math.floor(Math.random() * photoCredit.length)]
+		let photoArr = await db.find({used:false, name:photoName}, 'credit')
+		let photo = photoArr[Math.floor(Math.random() * photoArr.length)]
+		await db.update(photo, {used:true}, 'credit')
+		if (path.parse(photo.photo).ext === '.jpg') {
+			gm(path.join(__dirname, '../pics/' + photo.photo)).size((err, num) => {
 				if (!err) {
-					color.from(path.join(__dirname, ('../pics/' + photo))).getPalette((err, palette) => {
+					color.from(path.join(__dirname, ('../pics/' + photo.photo))).getPalette((err, palette) => {
 						if (!err) {
 							debug('Got photo colors.')
-							writeImage(num.width, num.height, palette.Vibrant._rgb, photo)
+							writeImage(num.width, num.height, palette.Vibrant._rgb, photo.photo)
 						} else {
 							rej(err)
 						}
