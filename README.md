@@ -71,6 +71,12 @@ WEBHOOK: URL for the webhook to your server. ex: example.com
 
 --credit url for the credit. (Required)
 
+--dbname Database Name (Required)
+
+--host hostname for mongodb
+
+--port port for mongodb
+
 
 # Example Picture
 
