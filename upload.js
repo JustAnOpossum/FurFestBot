@@ -5,7 +5,7 @@ process.env.HOST = opts.host || 'localhost'
 process.env.PORT = opts.port || 27017
 const Promise = require('bluebird')
 const db = require('./src/dbcontroller.js')
-const unzip = require('unzip')
+const unzip = require('unzipper')
 const fs = Promise.promisifyAll(require('fs-extra'))
 
 if (!opts.dbname) {
