@@ -12,7 +12,7 @@ exports.getUsers = async function (msg) {
             tempStr += `${user.name}\n`
         })
         tempStr += users.length
-        bot.sendMessage(message.owner, tempStr)
+        bot.sendMessage(msg.chat.id, tempStr)
     }
 }
 
@@ -25,7 +25,7 @@ exports.getLogs = async function (msg) {
             let json = JSON.parse(split[x])
             tempStr += `${json.level}: ${json.message} ${json.timestamp}\n\n`
         }
-        bot.sendMessage(message.owner, tempStr)
+        bot.sendMessage(msg.chat.id, tempStr)
     }
 }
 
@@ -40,6 +40,6 @@ exports.broadcast = async function (msg, match) {
 
 exports.test = function (msg, match) {
     if (message.owner.includes(msg.chat.id)) {
-        bot.sendMessage(message.owner, match[1], { parse_mode: 'Markdown' })
+        bot.sendMessage(msg.chat.id, match[1], { parse_mode: 'Markdown' })
     }
 }
