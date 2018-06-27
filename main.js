@@ -3,7 +3,7 @@
 const days = require('./src/days.js')
 const admin = require('./src/adminCommands.js')
 const bot = require('./src/bots.js').bot
-const adminBot = require('./src/bots.js').admin
+const bot = require('./src/bots.js').admin
 const command = require('./src/commands.js')
 const message = require('./src/message.js')
 
@@ -18,8 +18,8 @@ bot.onText(/\/help/, command.help)
 bot.onText(/\/daysleft/, command.daysleft)
 bot.on('callback_query', command.answerKeyboard)
 
-adminBot.onText(/\/broadcast (.+)/, admin.broadcast)
-adminBot.onText(/\/test (.+)/, admin.test)
-adminBot.onText(/\/users/, admin.getUsers)
-adminBot.onText(/\/logs/, admin.getLogs)
-adminBot.onText(/\/upload/, admin.uploadPhoto)
+bot.onText(/\/broadcast (.+)/, admin.broadcast)
+bot.onText(/\/test (.+)/, admin.test)
+bot.onText(/\/users/, admin.getUsers)
+bot.onText(/\/logs/, admin.getLogs)
+bot.onText(/\/upload/, admin.uploadPhoto)
