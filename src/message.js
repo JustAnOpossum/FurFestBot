@@ -2,7 +2,7 @@ const process = require('process')
 const con = process.env.CON
 
 module.exports = {
-   owner: 119682002, //Your chat ID goes here
+   owner: [119682002], //Your chat ID goes here, if there is mor than one just add it on.
    help: { //Don't touch these are for the menu
       'Subscribe To Countdown': 'startcountdown',
       'Unsubscribe From Countdown': 'stopcountdown',

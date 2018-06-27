@@ -34,7 +34,7 @@ async function sendDaily() {
 
 
 let day = days.until()
-if (day >= 1 && day <= 150) {
+if (day >= 1 && day <= 130) {
 	online('https://api.telegram.org').then(status => {
 		if (status) {
 			sendDaily()
