@@ -3,9 +3,7 @@
 const days = require('./src/days.js')
 const admin = require('./src/adminCommands.js')
 const bot = require('./src/bots.js').bot
-const bot = require('./src/bots.js').admin
 const command = require('./src/commands.js')
-const message = require('./src/message.js')
 
 bot.on('new_chat_members', command.addedToGroup)
 bot.on('message', command.message)
