@@ -2,7 +2,6 @@ const Promise = require('bluebird')
 const empty = require('is-empty')
 const path = require('path')
 const bot = require('./bots.js').bot
-const admin = require('./bots.js').admin
 const returns = require('./returns.js')
 const days = require('./days.js')
 const fs = Promise.promisifyAll(require('fs-extra'))
@@ -94,7 +93,9 @@ async function answerKeyboard(item) { //This answers the request for keyboard, c
 			if (status) {
 				bot.editMessageText(message.countdown[countdownType], { chat_id: chatId, message_id: messageId, reply_markup: generateButtons('command') })
 				if (countdownType === 'start') {
-					admin.sendMessage(message.owner, (item.message.chat.title || item.message.chat.first_name) + ' Subscribed!')
+					message.owner.forEach(ownerId => {
+						bot.sendMessage(ownerId, (item.message.chat.title || item.message.chat.first_name) + ' Subscribed!')
+					})
 				}
 			} else {
 				bot.editMessageText(message.countdown.else[countdownType], { chat_id: chatId, message_id: messageId, reply_markup: generateButtons('command') })
