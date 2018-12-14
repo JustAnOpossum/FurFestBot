@@ -12,7 +12,7 @@
     "is-empty": "^1.2.0",
     "is-reachable": "^2.3.3",
     "minimist": "^1.2.0",
-    "mongoose": "^5.0.1",
+    "mongoose": "^5.2.12",
     "nedb": "^1.8.0",
     "node-emoji": "^1.8.1",
     "node-telegram-bot-api": "^0.30.0",
