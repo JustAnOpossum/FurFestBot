@@ -18,12 +18,15 @@
     "node-telegram-bot-api": "^0.30.0",
     "node-vibrant": "^3.0.0",
     "unzipper": "^0.8.14",
-    "winston": "^2.4.0"
+    "winston": "^2.4.0",
+    "snyk": "^1.316.2"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "mkdir pics; mkdir logs; touch logs/bot.log; mkdir countdown; exit 0"
+    "postinstall": "mkdir pics; mkdir logs; touch logs/bot.log; mkdir countdown; exit 0",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -34,5 +37,6 @@
   "bugs": {
     "url": "https://github.com/ConnorTheFox/FurFestBot/issues"
   },
-  "homepage": "https://github.com/ConnorTheFox/FurFestBot#readme"
+  "homepage": "https://github.com/ConnorTheFox/FurFestBot#readme",
+  "snyk": true
 }
